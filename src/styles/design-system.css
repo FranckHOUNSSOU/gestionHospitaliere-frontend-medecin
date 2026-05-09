@@ -302,7 +302,7 @@
   width: 750px; height: 750px;
   background-image: url('/chuMel-logo.png');
   background-repeat: no-repeat; background-position: center;
-  background-size: 750px auto; opacity: 0.1;
+  background-size: 60% auto; opacity: 0.1;
   pointer-events: none; z-index: 0;
 }
 
