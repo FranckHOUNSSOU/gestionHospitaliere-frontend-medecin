@@ -31,10 +31,15 @@ export const Sidebar = ({ minimized }: { minimized: boolean }) => {
 
       <div className="med-nav-sec">Patients</div>
       <Item to="/patients" minimized={minimized} icon={
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
-        <circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/>
-      </svg>
-    } label="Recherche Dossier" />
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
+          <circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/>
+        </svg>
+      } label="Recherche Dossier" />
+      <Item to="/dossier-patients" minimized={minimized} icon={
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+        </svg>
+      } label="Dossiers Service" />
 
       <div className="med-nav-sec">Clinique</div>
       <Item to="/diagnostics" minimized={minimized} icon={

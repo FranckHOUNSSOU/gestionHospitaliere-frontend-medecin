@@ -11,6 +11,7 @@ import PatientList              from './pages/Patients/PatientList';
 import ValiderDiagnostic        from './pages/Diagnostic/ValiderDiagnostic';
 import Calendrier               from './pages/Calendrier/Calendrier';
 import SejourHistorique         from './pages/Sejours/SejourHistorique';
+import DossierServicePage       from './pages/DossierService/DossierServicePage';
 import ProfilPage               from './pages/ProfilPage/ProfilPage';
 import ConfidentialitePage      from './pages/ConfidentialitePage/ConfidentialitePage';
 import NotificationsPage        from './pages/NotificationsPage/NotificationsPage';
@@ -37,6 +38,7 @@ function App() {
               <Route path="diagnostics"     element={<ValiderDiagnostic />}/>
               <Route path="calendrier"      element={<Calendrier />}       />
               <Route path="hospitalisations"element={<SejourHistorique />} />
+              <Route path="dossier-patients" element={<DossierServicePage />} />
               <Route path="profil"          element={<ProfilPage />}       />
               <Route path="notifications"   element={<NotificationsPage />}/>
               <Route path="confidentialite" element={<ConfidentialitePage />}/>

@@ -7,7 +7,6 @@ import type {
   Prescription,
   CreatePrescriptionDto,
   RendezVous,
-  DossierComplet,
   SejourHistorique,
 } from '../types/auth.types';
 
@@ -27,9 +26,19 @@ export const getPatientById = (id: string) =>
 
 /** Dossier complet : allergies, traitements à risque, séjours */
 export const getPatientDossier = (id: string) =>
-  apiClient.get<DossierComplet>(`/patients/${id}/dossier`);
+  apiClient.get<Patient>(`/patients/${id}/dossier`);
 
 // ─── Séjours ─────────────────────────────────────────────────────────────────
+
+/** Tous les patients pris en charge par les médecins du même service */
+export const getPatientsMonService = (q?: string) =>
+  apiClient.get<Patient[]>('/sejours/patients-du-service', {
+    params: q?.trim() ? { q } : {},
+  });
+
+/** Tous les séjours d'un patient (avec médecin responsable et diagnostics) */
+export const getSejoursPatient = (patientId: string) =>
+  apiClient.get<Sejour[]>(`/sejours/patient/${patientId}`);
 
 export const getSejourActif = (patientId: string) =>
   apiClient.get<Sejour>(`/sejours/patient/${patientId}/actif`);

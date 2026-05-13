@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import type { Patient, Sejour, DossierComplet } from '../../types/auth.types';
+import type { Patient, Sejour } from '../../types/auth.types';
 import { getPatientDossier, getSejourActif, getHistoriqueSejours } from '../../services/medecinService';
 import OrdonnanceModal from './OrdonnanceModal';
 
@@ -23,7 +23,7 @@ function initiales(nom: string, prenom: string) {
 }
 
 export default function PatientDossier({ patient, onRetour }: Props) {
-  const [dossier,        setDossier]        = useState<DossierComplet | null>(null);
+  const [dossier,        setDossier]        = useState<Patient | null>(null);
   const [sejourActif,    setSejourActif]    = useState<Sejour | null>(null);
   const [historique,     setHistorique]     = useState<Sejour[]>([]);
   const [autresSymptomes, setAutresSymptomes] = useState('');
@@ -41,7 +41,7 @@ export default function PatientDossier({ patient, onRetour }: Props) {
           getSejourActif(patient.id),
           getHistoriqueSejours(patient.id),
         ]);
-        if (dRes.status === 'fulfilled') setDossier(dRes.value.data);
+        if (dRes.status === 'fulfilled') setDossier(dRes.value.data as unknown as Patient);
         if (sRes.status === 'fulfilled') setSejourActif(sRes.value.data);
         if (hRes.status === 'fulfilled') setHistorique(hRes.value.data);
       } finally {
@@ -61,8 +61,8 @@ export default function PatientDossier({ patient, onRetour }: Props) {
     setTimeout(() => setFeedback(null), 3000);
   }
 
-  const pt = dossier?.patient ?? patient;
-  const allergiesSeveres = pt.allergies?.filter((a) => a.gravite === 'Severe') ?? [];
+  const pt = dossier ?? patient;
+  const allergiesSeveres = pt.allergies?.filter((a) => a.severite === 'Sévère') ?? [];
   const diagnosticsValides   = sejourActif?.diagnostics?.filter((d) => d.valide) ?? [];
   const diagnosticsEnAttente = sejourActif?.diagnostics?.filter((d) => !d.valide) ?? [];
 
@@ -92,7 +92,7 @@ export default function PatientDossier({ patient, onRetour }: Props) {
               ? <span className="med-badge med-badge-yellow">Hospitalisé(e)</span>
               : <span className="med-badge med-badge-gray">Pas de séjour actif</span>}
             {allergiesSeveres.map((a) => (
-              <span key={a.id} className="med-badge med-badge-red">⚠ Allergie : {a.substance}</span>
+              <span key={a.id} className="med-badge med-badge-red">⚠ Allergie : {a.allergene}</span>
             ))}
             {sejourActif && (
               <span className="med-badge med-badge-blue">Séjour depuis le {formatDate(sejourActif.dateAdmission)}</span>
@@ -104,7 +104,7 @@ export default function PatientDossier({ patient, onRetour }: Props) {
       {/* Alertes */}
       {allergiesSeveres.length > 0 && (
         <div className="med-alert med-alert-danger">
-          ⚠ {allergiesSeveres.map((a) => `ALLERGIE SÉVÈRE : ${a.substance}`).join(' | ')}
+          ⚠ {allergiesSeveres.map((a) => `ALLERGIE SÉVÈRE : ${a.allergene}`).join(' | ')}
         </div>
       )}
       {feedback && (
@@ -137,12 +137,12 @@ export default function PatientDossier({ patient, onRetour }: Props) {
             {pt.allergies && pt.allergies.length > 0
               ? pt.allergies.map((a) => (
                   <div key={a.id} className="med-row" style={{ cursor: 'default' }}>
-                    <span className={`med-badge ${a.gravite === 'Severe' ? 'med-badge-red' : a.gravite === 'Moderee' ? 'med-badge-yellow' : 'med-badge-gray'}`}>
-                      {a.gravite}
+                    <span className={`med-badge ${a.severite === 'Sévère' || a.severite === 'Mortelle' ? 'med-badge-red' : a.severite === 'Modérée' ? 'med-badge-yellow' : 'med-badge-gray'}`}>
+                      {a.severite ?? 'Non précisé'}
                     </span>
                     <div>
-                      <div className="med-row-name">{a.substance}</div>
-                      {a.description && <div className="med-row-sub">{a.description}</div>}
+                      <div className="med-row-name">{a.allergene}</div>
+                      {a.observations && <div className="med-row-sub">{a.observations}</div>}
                     </div>
                   </div>
                 ))
@@ -190,8 +190,8 @@ export default function PatientDossier({ patient, onRetour }: Props) {
                   <div key={t.id} className="med-row" style={{ cursor: 'default' }}>
                     <span className="med-badge med-badge-yellow">⚠</span>
                     <div>
-                      <div className="med-row-name">{t.nom}</div>
-                      <div className="med-row-sub">{t.risque}</div>
+                      <div className="med-row-name">{t.nomMedicament}</div>
+                      <div className="med-row-sub">{t.observations ?? t.posologieEnCours ?? t.classe ?? ''}</div>
                     </div>
                   </div>
                 ))}

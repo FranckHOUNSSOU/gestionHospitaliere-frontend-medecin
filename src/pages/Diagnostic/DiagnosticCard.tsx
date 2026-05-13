@@ -8,12 +8,7 @@ interface Props {
   onEcarte: (id: string) => void;
 }
 
-const STATUTS: Diagnostic['statut'][] = ['Suspecte', 'Confirme', 'Ecarte'];
-const STATUT_LABELS: Record<string, string> = {
-  Suspecte: 'Suspecté',
-  Confirme: 'Confirmé',
-  Ecarte: 'Écarté',
-};
+const STATUTS: Diagnostic['statut'][] = ['Suspecté', 'Confirmé', 'Écarté'];
 
 function formatDate(iso?: string) {
   if (!iso) return '—';
@@ -44,7 +39,7 @@ export default function DiagnosticCard({ diagnostic: diag, onValidated, onEcarte
   async function handleEcarter() {
     setLoading(true); setError('');
     try {
-      await updateDiagnostic(diag.sejour!.id, diag.id, { statut: 'Ecarte', valide: false });
+      await updateDiagnostic(diag.sejour!.id, diag.id, { statut: 'Écarté', valide: false });
       onEcarte(diag.id);
     } catch {
       setError("Erreur lors de l'opération. Veuillez réessayer.");
@@ -89,7 +84,7 @@ export default function DiagnosticCard({ diagnostic: diag, onValidated, onEcarte
           </div>
           <div>
             <div className="med-form-label" style={{ marginBottom: 2 }}>Statut proposé</div>
-            <div style={{ fontSize: 13, color: 'var(--med-tx)' }}>{STATUT_LABELS[diag.statut]}</div>
+            <div style={{ fontSize: 13, color: 'var(--med-tx)' }}>{diag.statut}</div>
           </div>
         </div>
 
@@ -103,7 +98,7 @@ export default function DiagnosticCard({ diagnostic: diag, onValidated, onEcarte
               style={{ maxWidth: 200 }}
             >
               {STATUTS.map((s) => (
-                <option key={s} value={s}>{STATUT_LABELS[s]}</option>
+                <option key={s} value={s}>{s}</option>
               ))}
             </select>
           </div>
