@@ -286,7 +286,7 @@ export default function PatientList() {
 
                   {/* Tags + chevron */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-                    {p.allergies?.some((a) => a.gravite === 'Severe') && (
+                    {p.allergies?.some((a) => a.severite === 'Sévère') && (
                       <span className="med-tag med-t-red" style={{ fontSize: 10 }}>⚠ Allergie</span>
                     )}
                     <span className="med-tag med-t-blue" style={{ fontSize: 11, fontFamily: 'JetBrains Mono, monospace' }}>

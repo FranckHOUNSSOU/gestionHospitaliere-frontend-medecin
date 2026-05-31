@@ -49,6 +49,23 @@ export interface TraitementARisque {
   observations?: string | null;
 }
  
+export interface ContactUrgence {
+  id: string;
+  nom: string;
+  prenom: string;
+  lienParente?: string | null;
+  telephone?: string | null;
+  estPersonneConfiance?: boolean;
+}
+
+export interface CouvertureSociale {
+  id: string;
+  typeCouverture?: string | null;
+  nomOrganisme?: string | null;
+  numeroAssure?: string | null;
+  estActive?: boolean;
+}
+
 export interface Patient {
   id: string;
   numeroIpp: string;
@@ -61,8 +78,11 @@ export interface Patient {
   groupeSanguinAbo?: string;
   groupeSanguinRhesus?: string;
   statutReanimatoire?: string;
+  statutProfil?: 'Complet' | 'Incomplet';
   allergies?: Allergie[];
   traitementsARisque?: TraitementARisque[];
+  contactsUrgence?: ContactUrgence[];
+  couverturesSociales?: CouvertureSociale[];
 }
  
 // ── Séjour ────────────────────────────────────────────────────────────────────

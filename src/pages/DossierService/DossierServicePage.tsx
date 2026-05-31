@@ -7,7 +7,7 @@ import {
 import {
   getPatientsMonService, getSejoursPatient, getSejourDetail,
 } from '../../services/medecinService';
-import type { Patient, Sejour, Allergie, TraitementARisque } from '../../types/auth.types';
+import type { Patient, Sejour, TraitementARisque } from '../../types/auth.types';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
