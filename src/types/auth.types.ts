@@ -109,6 +109,7 @@ export interface SejourHistorique {
   dateAdmission: string;
   dateSortie?: string;
   motifHospitalisation: string;
+  typeSejour: 'Hospitalisation' | 'Consultation' | 'Urgences';
   statut: 'actif' | 'cloture';
   patient: Pick<Patient, 'id' | 'nom' | 'prenom' | 'numeroIpp' | 'dateNaissance' | 'sexe'>;
 }
