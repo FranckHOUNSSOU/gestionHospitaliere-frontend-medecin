@@ -175,3 +175,115 @@ export interface RendezVous {
   statut: 'Programme' | 'Confirme' | 'Annule' | 'Effectue';
   dureeMinutes?: number;
 }
+
+// ── Profil médecin complet ────────────────────────────────────────────────────
+
+export type StatutOrdre  = 'INSCRIT' | 'SUSPENDU' | 'RADIE';
+export type SexeMedecin  = 'M' | 'F' | 'AUTRE';
+export type TypeContrat  = 'TITULAIRE' | 'CONTRACTUEL' | 'VACATAIRE' | 'LIBERAL' | 'INTERNE' | 'RESIDENT';
+export type TypeDiplome  = 'DOCTORAT' | 'DES' | 'DESC' | 'DU' | 'DIU' | 'MASTER' | 'AUTRE';
+export type RoleDansService = 'CHEF_DE_SERVICE' | 'PRATICIEN' | 'ASSISTANT' | 'INTERNE' | 'CONSULTANT';
+
+export interface MedecinSpecialite {
+  id: string;
+  specialite: string;
+  estPrincipale: boolean;
+  dateObtention?: string | null;
+}
+
+export interface MedecinDiplome {
+  id: string;
+  intitule: string;
+  type: TypeDiplome;
+  etablissement?: string | null;
+  pays?: string | null;
+  dateObtention?: string | null;
+  documentUrl?: string | null;
+}
+
+export interface MedecinAccreditation {
+  id: string;
+  intitule: string;
+  organismeCertificateur?: string | null;
+  dateObtention?: string | null;
+  dateExpiration?: string | null;
+  estValide?: boolean;
+  documentUrl?: string | null;
+}
+
+export interface MedecinAffectation {
+  id: string;
+  service: { id: string; nom: string; code: string };
+  roleDansService: RoleDansService;
+  estPrincipal: boolean;
+  dateDebut: string;
+  dateFin?: string | null;
+  estActive: boolean;
+}
+
+export interface MedecinProfil {
+  id: string;
+  user: {
+    id: string;
+    nom: string;
+    prenom: string;
+    email: string;
+    telephone: string | null;
+    role: string;
+    numeroOrdre: string | null;
+  };
+  numeroOrdre: string;
+  dateInscriptionOrdre?: string | null;
+  statutOrdre: StatutOrdre;
+  dateNaissance?: string | null;
+  sexe?: SexeMedecin | null;
+  nationalite?: string | null;
+  photoUrl?: string | null;
+  telephoneUrgence?: string | null;
+  typeContrat?: TypeContrat | null;
+  datePriseDeFonction?: string | null;
+  dateFinContrat?: string | null;
+  estActif: boolean;
+  specialites: MedecinSpecialite[];
+  diplomes: MedecinDiplome[];
+  accreditations: MedecinAccreditation[];
+  affectations: MedecinAffectation[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateSpecialiteDto {
+  specialite: string;
+  estPrincipale?: boolean;
+  dateObtention?: string;
+}
+
+export interface CreateDiplomeDto {
+  intitule: string;
+  type: TypeDiplome;
+  etablissement?: string;
+  pays?: string;
+  dateObtention?: string;
+  documentUrl?: string;
+}
+
+export interface CreateAccreditationDto {
+  intitule: string;
+  organismeCertificateur?: string;
+  dateObtention?: string;
+  dateExpiration?: string;
+  documentUrl?: string;
+}
+
+export interface UpdateMedecinDto {
+  dateInscriptionOrdre?: string;
+  statutOrdre?: StatutOrdre;
+  dateNaissance?: string;
+  sexe?: SexeMedecin;
+  nationalite?: string;
+  photoUrl?: string;
+  telephoneUrgence?: string;
+  typeContrat?: TypeContrat;
+  datePriseDeFonction?: string;
+  dateFinContrat?: string;
+}
