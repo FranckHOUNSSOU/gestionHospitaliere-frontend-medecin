@@ -1,5 +1,8 @@
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../../context/ThemeContext';
 import { useAuth } from '../../context/AuthContext';
+import { getUnreadCount } from '../../services/notificationService';
 
 export const Topbar = ({ minimized, onToggleSidebar }: {
   minimized: boolean;
@@ -7,10 +10,21 @@ export const Topbar = ({ minimized, onToggleSidebar }: {
 }) => {
   const { dark, toggle } = useTheme();
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
 
-  const initiales = user
-    ? `${user.nom?.[0] ?? ''}${user.prenom?.[0] ?? ''}`.toUpperCase()
-    : 'DR';
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  // Sondage du nombre de notifications non lues toutes les 60s
+  useEffect(() => {
+    function load() {
+      getUnreadCount().then(r => setUnreadCount(r.data.count)).catch(() => {});
+    }
+    load();
+    const interval = setInterval(load, 60_000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const initiales = user ? `${user.nom?.[0] ?? ''}${user.prenom?.[0] ?? ''}`.toUpperCase() : 'DR';
   const nomComplet = user ? `Dr. ${user.prenom} ${user.nom}` : 'Médecin';
 
   return (
@@ -45,12 +59,29 @@ export const Topbar = ({ minimized, onToggleSidebar }: {
           Système opérationnel
         </div>
 
-        <button className="med-icon-btn" title="Notifications">
+        {/* ── Cloche notifications → /notifications ── */}
+        <button
+          className="med-icon-btn"
+          title="Notifications"
+          onClick={() => navigate('/notifications')}
+          style={{ position: 'relative' }}
+        >
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
             <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
             <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
           </svg>
-          <div className="med-notif-badge" />
+          {unreadCount > 0 && (
+            <span style={{
+              position: 'absolute', top: 2, right: 2,
+              width: 16, height: 16, borderRadius: '50%',
+              background: '#dc2626', color: '#fff',
+              fontSize: 9, fontWeight: 700,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              lineHeight: 1, pointerEvents: 'none',
+            }}>
+              {unreadCount > 9 ? '9+' : unreadCount}
+            </span>
+          )}
         </button>
 
         <button className="med-icon-btn" onClick={toggle} title={dark ? 'Mode clair' : 'Mode sombre'}>

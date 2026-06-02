@@ -10,7 +10,7 @@ export default defineConfig({
     allowedHosts: true,
     proxy: {
       '/api': {
-        target: 'http://localhost:3000',
+        target: 'https://gestionhospitaliere-backend.onrender.com',
         changeOrigin: true,
       },
     },
