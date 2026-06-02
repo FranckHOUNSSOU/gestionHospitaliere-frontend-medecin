@@ -95,7 +95,7 @@ interface DiplomeModalProps {
 }
 
 function DiplomeModal({ medecinId, onClose, onSaved }: DiplomeModalProps) {
-  const [form, setForm] = useState<CreateDiplomeDto>({ intitule: '', type: 'DOCTORAT' });
+  const [form, setForm] = useState<CreateDiplomeDto>({ intitule: '', type: 'Doctorat' });
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState('');
 
