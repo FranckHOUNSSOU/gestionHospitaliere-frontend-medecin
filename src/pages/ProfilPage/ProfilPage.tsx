@@ -57,28 +57,28 @@ function calcCompletion(p: MedecinProfil): number {
 // ── Constants ─────────────────────────────────────────────────────────────────
 
 const STATUTS_ORDRE: { value: StatutOrdre; label: string }[] = [
-  { value: 'INSCRIT',  label: 'Inscrit'  },
-  { value: 'SUSPENDU', label: 'Suspendu' },
-  { value: 'RADIE',    label: 'Radié'    },
+  { value: 'Inscrit',  label: 'Inscrit'  },
+  { value: 'Suspendu', label: 'Suspendu' },
+  { value: 'Radié',    label: 'Radié'    },
 ];
 
 const TYPES_CONTRAT: { value: TypeContrat; label: string }[] = [
-  { value: 'TITULAIRE',    label: 'Titulaire'    },
-  { value: 'CONTRACTUEL',  label: 'Contractuel'  },
-  { value: 'VACATAIRE',    label: 'Vacataire'    },
-  { value: 'LIBERAL',      label: 'Libéral'      },
-  { value: 'INTERNE',      label: 'Interne'      },
-  { value: 'RESIDENT',     label: 'Résident'     },
+  { value: 'Titulaire',   label: 'Titulaire'   },
+  { value: 'Contractuel', label: 'Contractuel' },
+  { value: 'Vacataire',   label: 'Vacataire'   },
+  { value: 'Libéral',     label: 'Libéral'     },
+  { value: 'Interne',     label: 'Interne'     },
+  { value: 'Résident',    label: 'Résident'    },
 ];
 
 const TYPES_DIPLOME: { value: TypeDiplome; label: string }[] = [
-  { value: 'DOCTORAT', label: 'Doctorat en médecine'              },
+  { value: 'Doctorat', label: 'Doctorat en médecine'               },
   { value: 'DES',      label: "DES – Diplôme d'études spécialisées" },
-  { value: 'DESC',     label: 'DESC – Diplôme complémentaire'     },
-  { value: 'DU',       label: 'DU – Diplôme universitaire'        },
-  { value: 'DIU',      label: 'DIU – Diplôme inter-universitaire' },
-  { value: 'MASTER',   label: 'Master'                            },
-  { value: 'AUTRE',    label: 'Autre'                             },
+  { value: 'DESC',     label: 'DESC – Diplôme complémentaire'      },
+  { value: 'DU',       label: 'DU – Diplôme universitaire'         },
+  { value: 'DIU',      label: 'DIU – Diplôme inter-universitaire'  },
+  { value: 'Master',   label: 'Master'                             },
+  { value: 'Autre',    label: 'Autre'                              },
 ];
 
 // ── Toast ─────────────────────────────────────────────────────────────────────
@@ -273,7 +273,7 @@ export default function ProfilPage() {
 
   // Form state — Professionnel
   const [fPro, setFPro] = useState({
-    statutOrdre: 'INSCRIT' as StatutOrdre,
+    statutOrdre: 'Inscrit' as StatutOrdre,
     dateInscriptionOrdre: '', typeContrat: '' as TypeContrat | '',
     datePriseDeFonction: '', dateFinContrat: '',
   });
@@ -400,12 +400,14 @@ export default function ProfilPage() {
   // ── Render helpers ────────────────────────────────────────────────────────
 
   function statutBadge(s: StatutOrdre) {
-    const map = {
-      INSCRIT:  { cls: 'med-badge med-badge-green', label: 'Inscrit' },
-      SUSPENDU: { cls: 'med-badge med-badge-yellow', label: 'Suspendu' },
-      RADIE:    { cls: 'med-badge med-badge-red', label: 'Radié' },
+    const map: Record<StatutOrdre, { cls: string; label: string }> = {
+      'Inscrit':  { cls: 'med-badge med-badge-green',  label: 'Inscrit'  },
+      'Suspendu': { cls: 'med-badge med-badge-yellow', label: 'Suspendu' },
+      'Radié':    { cls: 'med-badge med-badge-red',    label: 'Radié'    },
     };
-    return <span className={map[s].cls}>{map[s].label}</span>;
+    const entry = map[s];
+    if (!entry) return <span className="med-badge med-badge-gray">{s}</span>;
+    return <span className={entry.cls}>{entry.label}</span>;
   }
 
   function completionColor(pct: number) {
@@ -665,7 +667,7 @@ export default function ProfilPage() {
                   <option value="">— Sélectionner —</option>
                   <option value="M">Masculin</option>
                   <option value="F">Féminin</option>
-                  <option value="AUTRE">Autre</option>
+                  <option value="Autre">Autre</option>
                 </select>
               </div>
               <div className="med-form-field">

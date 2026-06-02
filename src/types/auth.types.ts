@@ -178,11 +178,11 @@ export interface RendezVous {
 
 // ── Profil médecin complet ────────────────────────────────────────────────────
 
-export type StatutOrdre  = 'INSCRIT' | 'SUSPENDU' | 'RADIE';
-export type SexeMedecin  = 'M' | 'F' | 'AUTRE';
-export type TypeContrat  = 'TITULAIRE' | 'CONTRACTUEL' | 'VACATAIRE' | 'LIBERAL' | 'INTERNE' | 'RESIDENT';
-export type TypeDiplome  = 'DOCTORAT' | 'DES' | 'DESC' | 'DU' | 'DIU' | 'MASTER' | 'AUTRE';
-export type RoleDansService = 'CHEF_DE_SERVICE' | 'PRATICIEN' | 'ASSISTANT' | 'INTERNE' | 'CONSULTANT';
+export type StatutOrdre  = 'Inscrit' | 'Suspendu' | 'Radié';
+export type SexeMedecin  = 'M' | 'F' | 'Autre';
+export type TypeContrat  = 'Titulaire' | 'Contractuel' | 'Vacataire' | 'Libéral' | 'Interne' | 'Résident';
+export type TypeDiplome  = 'Doctorat' | 'DES' | 'DESC' | 'DU' | 'DIU' | 'Master' | 'Autre';
+export type RoleDansService = 'Chef de service' | 'Praticien' | 'Assistant' | 'Interne' | 'Consultant';
 
 export interface MedecinSpecialite {
   id: string;
