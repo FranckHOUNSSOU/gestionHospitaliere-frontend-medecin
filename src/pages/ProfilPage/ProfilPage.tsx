@@ -73,7 +73,7 @@ const TYPES_CONTRAT: { value: TypeContrat; label: string }[] = [
 
 const TYPES_DIPLOME: { value: TypeDiplome; label: string }[] = [
   { value: 'DOCTORAT', label: 'Doctorat en médecine'              },
-  { value: 'DES',      label: 'DES – Diplôme d'études spécialisées' },
+  { value: 'DES',      label: "DES – Diplôme d'études spécialisées" },
   { value: 'DESC',     label: 'DESC – Diplôme complémentaire'     },
   { value: 'DU',       label: 'DU – Diplôme universitaire'        },
   { value: 'DIU',      label: 'DIU – Diplôme inter-universitaire' },
