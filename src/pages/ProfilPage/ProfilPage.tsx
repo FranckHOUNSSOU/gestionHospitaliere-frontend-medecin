@@ -13,6 +13,7 @@ import {
   removeDiplome,
   addAccreditation,
   removeAccreditation,
+  uploadMedecinDocument,
 } from '../../services/medecinService';
 import type {
   MedecinProfil,
@@ -86,6 +87,88 @@ const TYPES_DIPLOME: { value: TypeDiplome; label: string }[] = [
 type ToastType = 'success' | 'error' | 'info';
 interface Toast { type: ToastType; msg: string }
 
+// ── Composant partagé : File Picker ──────────────────────────────────────────
+
+interface FilePickerProps {
+  medecinId: string;
+  onUploaded: (url: string) => void;
+  onError: (msg: string) => void;
+  disabled?: boolean;
+}
+
+function FilePicker({ medecinId, onUploaded, onError, disabled }: FilePickerProps) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [file, setFile]       = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploaded, setUploaded]   = useState(false);
+
+  async function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const selected = e.target.files?.[0];
+    if (!selected) return;
+    const MAX = 10 * 1024 * 1024;
+    if (selected.size > MAX) { onError('Le fichier dépasse 10 Mo.'); return; }
+    setFile(selected);
+    setUploaded(false);
+    setUploading(true);
+    try {
+      const { data } = await uploadMedecinDocument(medecinId, selected);
+      onUploaded(data.url);
+      setUploaded(true);
+    } catch {
+      onError("Échec de l'upload. Vérifiez votre connexion et réessayez.");
+      setFile(null);
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  return (
+    <div>
+      <input
+        ref={inputRef}
+        type="file"
+        accept=".pdf,.jpg,.jpeg,.png"
+        style={{ display: 'none' }}
+        onChange={handleChange}
+        disabled={disabled || uploading}
+      />
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <button
+          type="button"
+          className="med-btn"
+          onClick={() => inputRef.current?.click()}
+          disabled={disabled || uploading}
+          style={{ flexShrink: 0 }}
+        >
+          {uploading ? 'Upload en cours…' : 'Choisir un fichier'}
+        </button>
+        {uploading && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--c-accent)', fontSize: '0.78125rem' }}>
+            <div className="med-spinner" style={{ width: 14, height: 14, borderWidth: 2 }} />
+            Upload en cours…
+          </div>
+        )}
+        {file && !uploading && (
+          <span style={{
+            fontSize: '0.75rem', color: uploaded ? 'var(--c-green)' : 'var(--c-t2)',
+            display: 'flex', alignItems: 'center', gap: 4, overflow: 'hidden',
+          }}>
+            {uploaded && <CheckCircle size={13} />}
+            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 200 }}>
+              {file.name}
+            </span>
+          </span>
+        )}
+        {!file && !uploading && (
+          <span style={{ fontSize: '0.71875rem', color: 'var(--c-t3)' }}>
+            PDF, JPG ou PNG · max 10 Mo
+          </span>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ── Modal : Diplôme ───────────────────────────────────────────────────────────
 
 interface DiplomeModalProps {
@@ -95,9 +178,9 @@ interface DiplomeModalProps {
 }
 
 function DiplomeModal({ medecinId, onClose, onSaved }: DiplomeModalProps) {
-  const [form, setForm] = useState<CreateDiplomeDto>({ intitule: '', type: 'Doctorat' });
+  const [form, setForm] = useState<CreateDiplomeDto>({ intitule: '', type: 'DOCTORAT' });
   const [saving, setSaving] = useState(false);
-  const [err, setErr] = useState('');
+  const [err, setErr]       = useState('');
 
   async function handleSave() {
     if (!form.intitule.trim()) { setErr('Le titre du diplôme est obligatoire.'); return; }
@@ -149,10 +232,13 @@ function DiplomeModal({ medecinId, onClose, onSaved }: DiplomeModalProps) {
                 onChange={e => setForm(p => ({ ...p, pays: e.target.value || undefined }))} />
             </div>
             <div className="med-form-field" style={{ gridColumn: 'span 2' }}>
-              <label className="med-label">URL du document (optionnel)</label>
-              <input className="med-input" placeholder="https://…"
-                value={form.documentUrl ?? ''}
-                onChange={e => setForm(p => ({ ...p, documentUrl: e.target.value || undefined }))} />
+              <label className="med-label">Document justificatif (optionnel)</label>
+              <FilePicker
+                medecinId={medecinId}
+                onUploaded={url => setForm(p => ({ ...p, documentUrl: url }))}
+                onError={msg => setErr(msg)}
+                disabled={saving}
+              />
             </div>
           </div>
         </div>
@@ -178,7 +264,7 @@ interface AccreditationModalProps {
 function AccreditationModal({ medecinId, onClose, onSaved }: AccreditationModalProps) {
   const [form, setForm] = useState<CreateAccreditationDto>({ intitule: '' });
   const [saving, setSaving] = useState(false);
-  const [err, setErr] = useState('');
+  const [err, setErr]       = useState('');
 
   async function handleSave() {
     if (!form.intitule.trim()) { setErr("L'intitulé est obligatoire."); return; }
@@ -222,10 +308,13 @@ function AccreditationModal({ medecinId, onClose, onSaved }: AccreditationModalP
                 onChange={e => setForm(p => ({ ...p, dateExpiration: e.target.value || undefined }))} />
             </div>
             <div className="med-form-field" style={{ gridColumn: 'span 2' }}>
-              <label className="med-label">URL du document (optionnel)</label>
-              <input className="med-input" placeholder="https://…"
-                value={form.documentUrl ?? ''}
-                onChange={e => setForm(p => ({ ...p, documentUrl: e.target.value || undefined }))} />
+              <label className="med-label">Document justificatif (optionnel)</label>
+              <FilePicker
+                medecinId={medecinId}
+                onUploaded={url => setForm(p => ({ ...p, documentUrl: url }))}
+                onError={msg => setErr(msg)}
+                disabled={saving}
+              />
             </div>
           </div>
         </div>

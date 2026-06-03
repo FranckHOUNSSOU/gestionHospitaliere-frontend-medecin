@@ -122,6 +122,14 @@ export const addAccreditation = (id: string, data: CreateAccreditationDto) =>
 export const removeAccreditation = (id: string, aid: string) =>
   apiClient.delete<{ message: string }>(`/medecins/${id}/accreditations/${aid}`);
 
+export const uploadMedecinDocument = (id: string, file: File) => {
+  const form = new FormData();
+  form.append('fichier', file);
+  return apiClient.post<{ url: string }>(`/medecins/${id}/documents`, form, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+};
+
 // ─── Dashboard ────────────────────────────────────────────────────────────────
 
 /** Patients dont le dossier a été ouvert récemment (séjour actif ou récent) */
