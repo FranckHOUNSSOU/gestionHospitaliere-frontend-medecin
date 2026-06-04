@@ -33,18 +33,39 @@ export interface LoginResponse {
 
 export interface Allergie {
   id: string;
-  substance: string;
-  type: string;
-  gravite: 'Legere' | 'Moderee' | 'Severe';
-  description?: string;
+  allergene: string;
+  typeReaction?: string | null;
+  severite?: 'Légère' | 'Modérée' | 'Sévère' | 'Mortelle' | null;
+  dateDecouverte?: string | null;
+  observations?: string | null;
 }
- 
+
 export interface TraitementARisque {
   id: string;
-  nom: string;
-  risque: string;
+  nomMedicament: string;
+  classe?: string | null;
+  posologieEnCours?: string | null;
+  niveauAlerte?: 'Faible' | 'Modéré' | 'Élevé' | 'Critique' | null;
+  observations?: string | null;
 }
  
+export interface ContactUrgence {
+  id: string;
+  nom: string;
+  prenom: string;
+  lienParente?: string | null;
+  telephone?: string | null;
+  estPersonneConfiance?: boolean;
+}
+
+export interface CouvertureSociale {
+  id: string;
+  typeCouverture?: string | null;
+  nomOrganisme?: string | null;
+  numeroAssure?: string | null;
+  estActive?: boolean;
+}
+
 export interface Patient {
   id: string;
   numeroIpp: string;
@@ -57,8 +78,11 @@ export interface Patient {
   groupeSanguinAbo?: string;
   groupeSanguinRhesus?: string;
   statutReanimatoire?: string;
+  statutProfil?: 'Complet' | 'Incomplet';
   allergies?: Allergie[];
   traitementsARisque?: TraitementARisque[];
+  contactsUrgence?: ContactUrgence[];
+  couverturesSociales?: CouvertureSociale[];
 }
  
 // ── Séjour ────────────────────────────────────────────────────────────────────
@@ -71,7 +95,7 @@ export interface Sejour {
   modeEntree: string;
   modeSortie?: string;
   motifHospitalisation: string;
-  medecinResponsable?: { id: string; nom: string; prenom: string };
+  medecinResponsable?: { id: string; numeroOrdre?: string; user?: { id: string; nom: string; prenom: string } };
   statut?: 'actif' | 'cloture';
   diagnostics?: Diagnostic[];
   prescriptions?: Prescription[];
@@ -85,6 +109,7 @@ export interface SejourHistorique {
   dateAdmission: string;
   dateSortie?: string;
   motifHospitalisation: string;
+  typeSejour: 'Hospitalisation' | 'Consultation' | 'Urgences';
   statut: 'actif' | 'cloture';
   patient: Pick<Patient, 'id' | 'nom' | 'prenom' | 'numeroIpp' | 'dateNaissance' | 'sexe'>;
 }
@@ -101,15 +126,15 @@ export interface Diagnostic {
   id: string;
   codeCim10: string;
   libelle: string;
-  type: 'Principal' | 'Associe' | 'Complication';
-  statut: 'Confirme' | 'Suspecte' | 'Ecarte';
+  type: 'Principal' | 'Associé' | 'Complication';
+  statut: 'Confirmé' | 'Suspecté' | 'Écarté';
   valide?: boolean;
   dateCreation?: string;
   saisiPar?: string;
   patient?: Pick<Patient, 'id' | 'nom' | 'prenom' | 'numeroIpp'>;
   sejour?: { id: string; numeroSejour: string };
 }
- 
+
 export interface CreateDiagnosticDto {
   codeCim10: string;
   libelle: string;

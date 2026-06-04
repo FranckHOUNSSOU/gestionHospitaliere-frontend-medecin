@@ -30,7 +30,7 @@ export default function OrdonnanceModal({ patient, sejour, onClose, onSuccess }:
   const [loading, setLoading] = useState(false);
   const [error,   setError]   = useState('');
 
-  const allergiesSeveres = patient.allergies?.filter((a) => a.gravite === 'Severe') ?? [];
+  const allergiesSeveres = patient.allergies?.filter((a) => a.severite === 'Sévère' || a.severite === 'Mortelle') ?? [];
 
   function update(key: string, field: keyof LignePrescription, value: string | number) {
     setLignes((prev) => prev.map((l) => (l._key === key ? { ...l, [field]: value } : l)));
@@ -41,7 +41,7 @@ export default function OrdonnanceModal({ patient, sejour, onClose, onSuccess }:
   }
 
   async function handleSubmit() {
-    const invalides = lignes.filter((l) => !l.nomMedicamentDci.trim() || !l.dose || !l.frequence.trim());
+    const invalides = lignes.filter((l) => !l.nomMedicamentDci.trim() || !l.frequence.trim() || !(l.dose > 0));
     if (invalides.length > 0) {
       setError('Veuillez compléter tous les champs obligatoires (médicament, dose, fréquence).');
       return;
@@ -79,7 +79,7 @@ export default function OrdonnanceModal({ patient, sejour, onClose, onSuccess }:
             </span>
             {allergiesSeveres.map((a) => (
               <div key={a.id} style={{ marginTop: 4 }}>
-                <span className="med-badge med-badge-red">⚠ Allergie sévère : {a.substance}</span>
+                <span className="med-badge med-badge-red">⚠ Allergie sévère : {a.allergene}</span>
               </div>
             ))}
           </div>
@@ -117,9 +117,9 @@ export default function OrdonnanceModal({ patient, sejour, onClose, onSuccess }:
                 <div className="med-form-group">
                   <label className="med-form-label">Dose *</label>
                   <input
-                    className="med-form-input" type="number" min={0} placeholder="500"
-                    value={ligne.dose || ''}
-                    onChange={(e) => update(ligne._key, 'dose', Number(e.target.value))}
+                    className="med-form-input" type="number" min={0.001} step="any" placeholder="ex : 500"
+                    value={ligne.dose > 0 ? ligne.dose : ''}
+                    onChange={(e) => update(ligne._key, 'dose', parseFloat(e.target.value) || 0)}
                   />
                 </div>
                 <div className="med-form-group">

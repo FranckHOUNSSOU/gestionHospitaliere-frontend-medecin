@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, type ChangeEvent } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
   Search, User, ChevronRight, FileText,
@@ -61,7 +61,7 @@ export default function PatientList() {
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
     setQuery(val);
     if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -286,7 +286,7 @@ export default function PatientList() {
 
                   {/* Tags + chevron */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-                    {p.allergies?.some((a) => a.gravite === 'Severe') && (
+                    {p.allergies?.some((a) => a.severite === 'Sévère') && (
                       <span className="med-tag med-t-red" style={{ fontSize: 10 }}>⚠ Allergie</span>
                     )}
                     <span className="med-tag med-t-blue" style={{ fontSize: 11, fontFamily: 'JetBrains Mono, monospace' }}>
