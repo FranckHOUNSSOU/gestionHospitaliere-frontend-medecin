@@ -181,7 +181,7 @@ export interface RendezVous {
 export type StatutOrdre  = 'Inscrit' | 'Suspendu' | 'Radié';
 export type SexeMedecin  = 'M' | 'F' | 'Autre';
 export type TypeContrat  = 'Titulaire' | 'Contractuel' | 'Vacataire' | 'Libéral' | 'Interne' | 'Résident';
-export type TypeDiplome  = 'Doctorat' | 'DES' | 'DESC' | 'DU' | 'DIU' | 'Master' | 'Autre';
+export type TypeDiplome  = 'DOCTORAT' | 'DES' | 'DESC' | 'DU' | 'DIU' | 'MASTER' | 'AUTRE';
 export type RoleDansService = 'Chef de service' | 'Praticien' | 'Assistant' | 'Interne' | 'Consultant';
 
 export interface MedecinSpecialite {
