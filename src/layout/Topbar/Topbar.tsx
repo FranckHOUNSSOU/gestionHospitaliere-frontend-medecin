@@ -103,7 +103,12 @@ export const Topbar = ({ minimized, onToggleSidebar }: {
         </button>
 
         <div className="med-user-btn">
-          <div className="med-avatar">{initiales}</div>
+          <div className="med-avatar" style={photoUrl ? { background: 'none', padding: 0, overflow: 'hidden' } : undefined}>
+            {photoUrl
+              ? <img src={photoUrl} alt={initiales} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+              : initiales
+            }
+          </div>
           <div>
             <div className="med-user-name">{nomComplet}</div>
             <div className="med-user-role">Médecin</div>
