@@ -8,6 +8,7 @@ import type {
   CreatePrescriptionDto,
   RendezVous,
   SejourHistorique,
+  SoinInfirmier,
 } from '../types/auth.types';
 
 // ─── Patients ────────────────────────────────────────────────────────────────
@@ -60,6 +61,9 @@ export const updateDiagnostic = (
   diagId: string,
   data: Partial<Omit<Diagnostic, 'id' | 'patient' | 'sejour'>>,
 ) => apiClient.patch<Diagnostic>(`/sejours/${sejourId}/diagnostics/${diagId}`, data);
+
+export const updateSoin = (sejourId: string, soinId: string, data: { valide: boolean }) =>
+  apiClient.patch<SoinInfirmier>(`/sejours/${sejourId}/soins/${soinId}`, data);
 
 export const createPrescription = (sejourId: string, data: CreatePrescriptionDto) =>
   apiClient.post<Prescription>(`/sejours/${sejourId}/prescriptions`, data);
