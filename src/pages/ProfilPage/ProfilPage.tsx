@@ -87,6 +87,97 @@ const TYPES_DIPLOME: { value: TypeDiplome; label: string }[] = [
 type ToastType = 'success' | 'error' | 'info';
 interface Toast { type: ToastType; msg: string }
 
+// ── Composant : Photo Picker ──────────────────────────────────────────────────
+
+interface PhotoPickerProps {
+  medecinId: string;
+  currentUrl: string;
+  initiales: string;
+  onUploaded: (url: string) => void;
+}
+
+function PhotoPicker({ medecinId, currentUrl, initiales, onUploaded }: PhotoPickerProps) {
+  const inputRef   = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+  const [err, setErr]             = useState('');
+
+  async function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.match(/image\/(jpg|jpeg|png|webp)/)) {
+      setErr('Format non supporté. Utilisez JPG, PNG ou WEBP.');
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setErr('La photo ne doit pas dépasser 5 Mo.');
+      return;
+    }
+    setErr(''); setUploading(true);
+    try {
+      const { data } = await uploadMedecinDocument(medecinId, file);
+      onUploaded(data.url);
+    } catch {
+      setErr("Échec de l'upload. Réessayez.");
+    } finally {
+      setUploading(false);
+      e.target.value = '';
+    }
+  }
+
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+      {/* Aperçu */}
+      <div style={{ position: 'relative', flexShrink: 0 }}>
+        {currentUrl ? (
+          <img
+            src={currentUrl}
+            alt="Photo de profil"
+            style={{ width: 72, height: 72, borderRadius: '50%', objectFit: 'cover', border: '3px solid var(--c-accent-bd)' }}
+            onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }}
+          />
+        ) : (
+          <div style={{
+            width: 72, height: 72, borderRadius: '50%',
+            background: 'linear-gradient(135deg, var(--c-accent) 0%, #0369a1 100%)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: '1.5rem', fontWeight: 700, color: '#fff',
+            border: '3px solid var(--c-accent-bd)',
+          }}>
+            {initiales}
+          </div>
+        )}
+        {uploading && (
+          <div style={{
+            position: 'absolute', inset: 0, borderRadius: '50%',
+            background: 'rgba(0,0,0,0.5)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+            <div className="med-spinner" style={{ width: 20, height: 20, borderWidth: 2, borderTopColor: '#fff' }} />
+          </div>
+        )}
+      </div>
+
+      {/* Actions */}
+      <div>
+        <input ref={inputRef} type="file" accept="image/jpg,image/jpeg,image/png,image/webp"
+          style={{ display: 'none' }} onChange={handleChange} disabled={uploading} />
+        <button
+          type="button"
+          className="med-btn med-btn-primary med-btn-sm"
+          onClick={() => inputRef.current?.click()}
+          disabled={uploading}
+        >
+          {uploading ? 'Upload…' : currentUrl ? 'Changer la photo' : 'Choisir une photo'}
+        </button>
+        <div style={{ fontSize: '0.65625rem', color: 'var(--c-t3)', marginTop: 4 }}>
+          JPG, PNG ou WEBP · max 5 Mo
+        </div>
+        {err && <div style={{ fontSize: '0.71875rem', color: 'var(--c-red)', marginTop: 4 }}>{err}</div>}
+      </div>
+    </div>
+  );
+}
+
 // ── Composant partagé : File Picker ──────────────────────────────────────────
 
 interface FilePickerProps {
@@ -772,16 +863,22 @@ export default function ProfilPage() {
                   onChange={e => setFIdent(p => ({ ...p, telephoneUrgence: e.target.value }))} />
               </div>
               <div className="med-form-field" style={{ gridColumn: 'span 2' }}>
-                <label className="med-label">URL de la photo de profil</label>
-                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                  <input className="med-input" placeholder="https://…"
-                    value={fIdent.photoUrl}
-                    onChange={e => setFIdent(p => ({ ...p, photoUrl: e.target.value }))} />
-                  {fIdent.photoUrl && (
-                    <img src={fIdent.photoUrl} alt="" style={{ width: 36, height: 36, borderRadius: 6, objectFit: 'cover', border: '1px solid var(--c-bdr)', flexShrink: 0 }}
-                      onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
-                  )}
-                </div>
+                <label className="med-label">Photo de profil</label>
+                <PhotoPicker
+                  medecinId={profil.id}
+                  currentUrl={fIdent.photoUrl}
+                  onUploaded={async (url) => {
+                    setFIdent(p => ({ ...p, photoUrl: url }));
+                    try {
+                      await updateMonProfilMedecin(profil.id, { photoUrl: url });
+                      await fetchProfil();
+                      showToast('success', 'Photo de profil mise à jour.');
+                    } catch {
+                      showToast('error', 'Erreur lors de la sauvegarde de la photo.');
+                    }
+                  }}
+                  initiales={`${profil.user.nom[0] ?? ''}${profil.user.prenom[0] ?? ''}`.toUpperCase()}
+                />
               </div>
             </div>
           </div>
