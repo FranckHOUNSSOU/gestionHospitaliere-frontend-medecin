@@ -95,6 +95,11 @@ export interface SoinInfirmier {
   resultatsObtenus?: string | null;
   dateHeure: string;
   valide: boolean;
+  saisiParId?: string | null;
+  saisiParNom?: string | null;
+  valideParId?: string | null;
+  valideParNom?: string | null;
+  dateValidation?: string | null;
   patient?: Pick<Patient, 'id' | 'nom' | 'prenom' | 'numeroIpp'>;
   sejour?: { id: string; numeroSejour: string };
 }
@@ -144,6 +149,11 @@ export interface Diagnostic {
   valide?: boolean;
   dateCreation?: string;
   saisiPar?: string;
+  saisiParId?: string | null;
+  saisiParNom?: string | null;
+  valideParId?: string | null;
+  valideParNom?: string | null;
+  dateValidation?: string | null;
   patient?: Pick<Patient, 'id' | 'nom' | 'prenom' | 'numeroIpp'>;
   sejour?: { id: string; numeroSejour: string };
 }

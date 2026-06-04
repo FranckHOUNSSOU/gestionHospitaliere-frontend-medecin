@@ -54,6 +54,9 @@ export default function SoinCard({ soin, onValidated }: Props) {
           <div>
             <div className="med-form-label" style={{ marginBottom: 2 }}>Saisi le</div>
             <div style={{ fontSize: 13, color: 'var(--med-tx)' }}>{formatDate(soin.dateHeure)}</div>
+            {soin.saisiParNom && (
+              <div style={{ fontSize: 11, color: 'var(--med-tx2)' }}>par {soin.saisiParNom}</div>
+            )}
           </div>
         </div>
 
