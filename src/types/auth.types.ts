@@ -168,6 +168,7 @@ export interface CreateDiagnosticDto {
 export interface Prescription {
   id: string;
   nomMedicamentDci: string;
+  nomCommercial?: string | null;
   dose: number;
   unite: string;
   frequence: string;
@@ -175,6 +176,9 @@ export interface Prescription {
   statut: 'Active' | 'Suspendue' | 'Terminee';
   dateDebut?: string;
   dateFin?: string;
+  observations?: string | null;
+  createdAt?: string;
+  medecinPrescripteur?: { id: string; user: { nom: string; prenom: string } } | null;
 }
  
 export interface CreatePrescriptionDto {

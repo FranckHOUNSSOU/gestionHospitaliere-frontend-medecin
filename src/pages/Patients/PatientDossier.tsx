@@ -226,6 +226,38 @@ export default function PatientDossier({ patient, onRetour }: Props) {
         </>
       )}
 
+      {/* Prescriptions du séjour */}
+      {sejourActif && (sejourActif.prescriptions ?? []).length > 0 && (
+        <>
+          <div className="med-section-title">Prescriptions — séjour en cours</div>
+          <div className="med-card" style={{ marginBottom: 16 }}>
+            {(sejourActif.prescriptions ?? []).map((p) => (
+              <div key={p.id} className="med-row" style={{ cursor: 'default', alignItems: 'flex-start', gap: 10 }}>
+                <div style={{ flex: 1 }}>
+                  <div className="med-row-name">
+                    {p.nomMedicamentDci}
+                    {p.nomCommercial && <span style={{ fontSize: 11, color: 'var(--med-tx2)', marginLeft: 6 }}>({p.nomCommercial})</span>}
+                  </div>
+                  <div className="med-row-sub">
+                    {[p.dose, p.unite, p.frequence, p.voieAdministration].filter(Boolean).join(' · ')}
+                    {p.observations && <> · {p.observations}</>}
+                  </div>
+                  {p.medecinPrescripteur && (
+                    <div style={{ fontSize: 11, color: 'var(--med-tx2)', marginTop: 2 }}>
+                      Prescrit par <strong>Dr. {p.medecinPrescripteur.user.prenom} {p.medecinPrescripteur.user.nom}</strong>
+                      {p.createdAt && <> le {formatDate(p.createdAt)}</>}
+                    </div>
+                  )}
+                </div>
+                <span className={`med-badge ${p.statut === 'Active' ? 'med-badge-green' : p.statut === 'Suspendue' ? 'med-badge-yellow' : 'med-badge-gray'}`}>
+                  {p.statut}
+                </span>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
       {/* Historique séjours */}
       {historique.length > 0 && (
         <>
