@@ -86,7 +86,19 @@ export interface Patient {
 }
  
 // ── Séjour ────────────────────────────────────────────────────────────────────
- 
+
+export interface SoinInfirmier {
+  id: string;
+  cible: string;
+  donneesObservees?: string | null;
+  actionsRealisees?: string | null;
+  resultatsObtenus?: string | null;
+  dateHeure: string;
+  valide: boolean;
+  patient?: Pick<Patient, 'id' | 'nom' | 'prenom' | 'numeroIpp'>;
+  sejour?: { id: string; numeroSejour: string };
+}
+
 export interface Sejour {
   id: string;
   numeroSejour: string;
@@ -98,6 +110,7 @@ export interface Sejour {
   medecinResponsable?: { id: string; numeroOrdre?: string; user?: { id: string; nom: string; prenom: string } };
   statut?: 'actif' | 'cloture';
   diagnostics?: Diagnostic[];
+  soinsInfirmiers?: SoinInfirmier[];
   prescriptions?: Prescription[];
   examens?: Examen[];
   constantes?: Constante[];
