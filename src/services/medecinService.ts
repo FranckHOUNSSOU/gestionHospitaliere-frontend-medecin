@@ -9,6 +9,14 @@ import type {
   RendezVous,
   SejourHistorique,
   SoinInfirmier,
+  MedecinProfil,
+  MedecinSpecialite,
+  MedecinDiplome,
+  MedecinAccreditation,
+  CreateSpecialiteDto,
+  CreateDiplomeDto,
+  CreateAccreditationDto,
+  UpdateMedecinDto,
 } from '../types/auth.types';
 
 // ─── Patients ────────────────────────────────────────────────────────────────
@@ -93,6 +101,38 @@ export const getMesRendezVous = (debut?: string, fin?: string) =>
 // ─── Profil médecin ───────────────────────────────────────────────────────────
 
 export const getMonProfil = () => apiClient.get('/auth/profil');
+
+export const getMonProfilMedecin = () =>
+  apiClient.get<MedecinProfil>('/medecins/moi');
+
+export const updateMonProfilMedecin = (id: string, data: UpdateMedecinDto) =>
+  apiClient.patch<MedecinProfil>(`/medecins/${id}`, data);
+
+export const addSpecialite = (id: string, data: CreateSpecialiteDto) =>
+  apiClient.post<MedecinSpecialite>(`/medecins/${id}/specialites`, data);
+
+export const removeSpecialite = (id: string, sid: string) =>
+  apiClient.delete<{ message: string }>(`/medecins/${id}/specialites/${sid}`);
+
+export const addDiplome = (id: string, data: CreateDiplomeDto) =>
+  apiClient.post<MedecinDiplome>(`/medecins/${id}/diplomes`, data);
+
+export const removeDiplome = (id: string, did: string) =>
+  apiClient.delete<{ message: string }>(`/medecins/${id}/diplomes/${did}`);
+
+export const addAccreditation = (id: string, data: CreateAccreditationDto) =>
+  apiClient.post<MedecinAccreditation>(`/medecins/${id}/accreditations`, data);
+
+export const removeAccreditation = (id: string, aid: string) =>
+  apiClient.delete<{ message: string }>(`/medecins/${id}/accreditations/${aid}`);
+
+export const uploadMedecinDocument = (id: string, file: File) => {
+  const form = new FormData();
+  form.append('fichier', file);
+  return apiClient.post<{ url: string }>(`/medecins/${id}/documents`, form, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+};
 
 // ─── Dashboard ────────────────────────────────────────────────────────────────
 

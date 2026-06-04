@@ -5,6 +5,7 @@ import type { LoginFormData } from '../../../types/auth.types';
 import { Container, Row, Col, Form, Button, Alert, Spinner } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './LoginPage.css';
+import loginHospital from '../../../assets/login-hospital.jpg';
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -39,11 +40,10 @@ export default function LoginPage() {
       <Container fluid className="h-100 g-0">
         <Row className="h-100 g-0">
 
-          {/* ── PANNEAU GAUCHE : illustration ── */}
+          {/* ── PANNEAU GAUCHE : photo ── */}
           <Col xs={12} lg={7} className="login-left d-none d-lg-flex flex-column justify-content-between">
-            <div className="login-bg-circle login-bg-circle--1" />
-            <div className="login-bg-circle login-bg-circle--2" />
-            <div className="login-bg-dots" />
+            <img src={loginHospital} alt="" className="login-photo-bg" aria-hidden="true" />
+            <div className="login-photo-overlay" />
 
             <div className="login-logo d-flex align-items-center gap-3">
               <img src="/chuMel-logo.png" alt="CHU-MEL" style={{ height: 52, width: 'auto' }} />
@@ -53,65 +53,13 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <div className="login-illus flex-grow-1 d-flex align-items-center justify-content-center">
-              <svg
-                className="login-illus__svg"
-                viewBox="0 0 520 440"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                {/* SOL */}
-                <rect x="40" y="370" width="440" height="6" rx="3" fill="rgba(255,255,255,0.1)"/>
-                <rect x="80" y="374" width="360" height="3" rx="1.5" fill="rgba(255,255,255,0.05)"/>
-
-                {/* BÂTIMENT */}
-                <rect x="160" y="160" width="200" height="210" rx="3"
-                  fill="rgba(255,255,255,0.07)" stroke="rgba(255,255,255,0.18)" strokeWidth="1.5"/>
-                <polygon points="148,160 260,95 372,160"
-                  fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.18)" strokeWidth="1.5"/>
-                <rect x="247" y="108" width="26" height="26" rx="4"
-                  fill="rgba(255,255,255,0.14)" stroke="rgba(255,255,255,0.32)" strokeWidth="1.5"/>
-                <rect x="255" y="114" width="10" height="14" rx="1.5" fill="rgba(255,255,255,0.7)"/>
-                <rect x="250" y="119" width="20" height="6" rx="1.5" fill="rgba(255,255,255,0.7)"/>
-
-                {/* Fenêtres */}
-                <rect x="175" y="178" width="32" height="26" rx="3"
-                  fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.16)" strokeWidth="1"/>
-                <rect x="217" y="178" width="32" height="26" rx="3"
-                  fill="rgba(255,255,255,0.16)" stroke="rgba(255,255,255,0.16)" strokeWidth="1"/>
-                <rect x="309" y="178" width="32" height="26" rx="3"
-                  fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.16)" strokeWidth="1"/>
-
-                {/* Porte */}
-                <rect x="234" y="286" width="52" height="84" rx="3"
-                  fill="rgba(255,255,255,0.09)" stroke="rgba(255,255,255,0.18)" strokeWidth="1"/>
-                <circle cx="262" cy="330" r="2.5" fill="rgba(255,255,255,0.4)"/>
-
-                {/* MÉDECIN */}
-                <circle cx="108" cy="200" r="22"
-                  fill="rgba(255,255,255,0.22)" stroke="rgba(255,255,255,0.38)" strokeWidth="1.5"/>
-                <path d="M80 290 Q82 250 108 232 Q134 250 136 290 L140 370 L76 370 Z"
-                  fill="rgba(255,255,255,0.18)" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5"/>
-                <rect x="103" y="252" width="8" height="14" rx="1.5" fill="rgba(255,255,255,0.55)"/>
-                <rect x="99" y="257" width="16" height="5" rx="1.5" fill="rgba(255,255,255,0.55)"/>
-                <path d="M80 270 Q60 280 52 300 Q46 316 54 322"
-                  stroke="rgba(255,255,255,0.28)" strokeWidth="10" strokeLinecap="round" fill="none"/>
-                <path d="M52 300 Q44 316 50 330 Q56 342 66 336 Q76 330 72 318"
-                  stroke="rgba(255,255,255,0.5)" strokeWidth="2.5" fill="none" strokeLinecap="round"/>
-                <circle cx="72" cy="318" r="8"
-                  stroke="rgba(255,255,255,0.5)" strokeWidth="2" fill="rgba(255,255,255,0.15)"/>
-                <circle cx="72" cy="318" r="3.5" fill="rgba(255,255,255,0.4)"/>
-
-                {/* ECG Monitor */}
-                <rect x="390" y="82" width="110" height="58" rx="10"
-                  fill="rgba(255,255,255,0.07)" stroke="rgba(255,255,255,0.18)" strokeWidth="1.5"/>
-                <polyline
-                  points="396,112 408,112 414,96 420,128 426,112 436,112 442,100 448,124 454,112 496,112"
-                  stroke="rgba(255,255,255,0.6)" strokeWidth="2" fill="none"
-                  strokeLinecap="round" strokeLinejoin="round"/>
-                <text x="396" y="130" fontFamily="Inter,sans-serif" fontSize="8"
-                  fill="rgba(255,255,255,0.28)" fontWeight="500" letterSpacing="1">MONITORING</text>
-              </svg>
+            <div className="login-photo-caption">
+              <h2 className="login-photo-caption__title">
+                Bienvenue sur votre espace clinique
+              </h2>
+              <p className="login-photo-caption__sub">
+                Consultez vos dossiers patients, diagnostics et suivis médicaux en toute sécurité.
+              </p>
             </div>
           </Col>
 
