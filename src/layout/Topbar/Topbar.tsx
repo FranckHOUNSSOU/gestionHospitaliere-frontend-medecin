@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../../context/ThemeContext';
 import { useAuth } from '../../context/AuthContext';
 import { getUnreadCount } from '../../services/notificationService';
+import client from '../../services/clients';
 
 export const Topbar = ({ minimized, onToggleSidebar }: {
   minimized: boolean;
@@ -13,6 +14,7 @@ export const Topbar = ({ minimized, onToggleSidebar }: {
   const navigate = useNavigate();
 
   const [unreadCount, setUnreadCount] = useState(0);
+  const [photoUrl, setPhotoUrl] = useState<string | null>(null);
 
   // Sondage du nombre de notifications non lues toutes les 60s
   useEffect(() => {
@@ -23,6 +25,14 @@ export const Topbar = ({ minimized, onToggleSidebar }: {
     const interval = setInterval(load, 60_000);
     return () => clearInterval(interval);
   }, []);
+
+  // Chargement de la photo de profil
+  useEffect(() => {
+    if (!user) return;
+    client.get<{ photoUrl?: string | null }>('/medecins/moi')
+      .then(res => setPhotoUrl(res.data.photoUrl ?? null))
+      .catch(() => setPhotoUrl(null));
+  }, [user]);
 
   const initiales = user ? `${user.nom?.[0] ?? ''}${user.prenom?.[0] ?? ''}`.toUpperCase() : 'DR';
   const nomComplet = user ? `Dr. ${user.prenom} ${user.nom}` : 'Médecin';
