@@ -76,7 +76,9 @@ export default function DiagnosticCard({ diagnostic: diag, onValidated, onEcarte
           <div>
             <div className="med-form-label" style={{ marginBottom: 2 }}>Saisi le</div>
             <div style={{ fontSize: 13, color: 'var(--med-tx)' }}>{formatDate(diag.dateCreation)}</div>
-            {diag.saisiPar && <div style={{ fontSize: 11, color: 'var(--med-tx2)' }}>par {diag.saisiPar}</div>}
+            {(diag.saisiParNom || diag.saisiPar) && (
+              <div style={{ fontSize: 11, color: 'var(--med-tx2)' }}>par {diag.saisiParNom ?? diag.saisiPar}</div>
+            )}
           </div>
           <div>
             <div className="med-form-label" style={{ marginBottom: 2 }}>Type</div>
