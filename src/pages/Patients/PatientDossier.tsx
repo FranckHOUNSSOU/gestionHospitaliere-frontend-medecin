@@ -286,7 +286,14 @@ export default function PatientDossier({ patient, onRetour }: Props) {
             {historique.map((s) => (
               <div key={s.id} className="med-row" style={{ cursor: 'default' }}>
                 <div style={{ flex: 1 }}>
-                  <div className="med-row-name">{s.motifHospitalisation}</div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                    <span className="med-row-name">{s.motifHospitalisation}</span>
+                    {s.typeSejour && (
+                      <span className={`med-badge ${s.typeSejour === 'Hospitalisation' ? 'med-badge-blue' : s.typeSejour === 'Consultation' ? 'med-badge-green' : 'med-badge-red'}`} style={{ fontSize: 10 }}>
+                        {s.typeSejour === 'Hospitalisation' ? '🏥' : s.typeSejour === 'Consultation' ? '🩺' : '🚨'} {s.typeSejour}
+                      </span>
+                    )}
+                  </div>
                   <div className="med-row-sub">{formatDate(s.dateAdmission)} → {formatDate(s.dateSortie)} · {s.numeroSejour}</div>
                 </div>
                 <span className="med-badge med-badge-gray">Terminé</span>

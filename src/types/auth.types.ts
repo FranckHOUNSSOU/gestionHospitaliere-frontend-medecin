@@ -112,6 +112,7 @@ export interface Sejour {
   modeEntree: string;
   modeSortie?: string;
   motifHospitalisation: string;
+  typeSejour?: 'Hospitalisation' | 'Consultation' | 'Urgences';
   medecinResponsable?: { id: string; numeroOrdre?: string; user?: { id: string; nom: string; prenom: string } };
   statut?: 'actif' | 'cloture';
   diagnostics?: Diagnostic[];
