@@ -234,7 +234,7 @@ export default function PatientDossier({ patient, onRetour }: Props) {
                     </span>
                     <div style={{ flex: 1 }}>
                       <div className="med-row-name">{d.libelle}</div>
-                      <div className="med-row-sub">Type : {d.type} · Statut : {d.statut}{d.dateCreation && ` · ${formatDate(d.dateCreation)}`}</div>
+                      <div className="med-row-sub">Type : {d.type} · Statut : {d.statut}{d.createdAt && ` · ${formatDate(d.createdAt)}`}{d.saisiParNom && ` · Saisi par ${d.saisiParNom}`}</div>
                     </div>
                     <span className={`med-badge ${d.valide ? 'med-badge-green' : 'med-badge-yellow'}`}>
                       {d.valide ? 'Validé' : 'En attente'}
