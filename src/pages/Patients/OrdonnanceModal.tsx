@@ -10,7 +10,14 @@ interface Props {
 }
 
 const UNITES = ['mg', 'ml', 'µg', 'UI', 'g'];
-const VOIES  = ['Orale', 'Intraveineuse (IV)', 'Intramusculaire (IM)', 'Sous-cutanée (SC)', 'Rectale', 'Inhalée', 'Topique'];
+const VOIES: { label: string; value: string }[] = [
+  { label: 'Orale',               value: 'Orale'   },
+  { label: 'Intraveineuse (IV)',   value: 'IV'      },
+  { label: 'Intramusculaire (IM)', value: 'IM'      },
+  { label: 'Sous-cutanée (SC)',    value: 'SC'      },
+  { label: 'Topique',              value: 'Topique' },
+  { label: 'Autre',                value: 'Autre'   },
+];
 
 function newLigne(): LignePrescription {
   return {
@@ -19,7 +26,7 @@ function newLigne(): LignePrescription {
     dose: 0,
     unite: 'mg',
     frequence: '',
-    voieAdministration: 'Orale',
+    voieAdministration: 'Orale' as LignePrescription['voieAdministration'],
     dateDebut: '',
     dateFin: '',
   };
@@ -140,7 +147,7 @@ export default function OrdonnanceModal({ patient, sejour, onClose, onSuccess }:
                   <label className="med-form-label">Voie</label>
                   <select className="med-form-select" value={ligne.voieAdministration}
                     onChange={(e) => update(ligne._key, 'voieAdministration', e.target.value)}>
-                    {VOIES.map((v) => <option key={v}>{v}</option>)}
+                    {VOIES.map((v) => <option key={v.value} value={v.value}>{v.label}</option>)}
                   </select>
                 </div>
               </div>

@@ -81,6 +81,7 @@ export default function PatientDossier({ patient, onRetour }: Props) {
   }
 
   const pt = dossier ?? patient;
+  const isResponsibleDoctor = !!user && !!sejourActif?.medecinResponsable?.user && sejourActif.medecinResponsable.user.id === user.id;
   const allergiesSeveres = pt.allergies?.filter((a) => a.severite === 'Sévère') ?? [];
   const diagnosticsValides   = sejourActif?.diagnostics?.filter((d) => d.valide) ?? [];
   const diagnosticsEnAttente = sejourActif?.diagnostics?.filter((d) => !d.valide) ?? [];
@@ -298,7 +299,12 @@ export default function PatientDossier({ patient, onRetour }: Props) {
       {/* Actions */}
       <div style={{ display: 'flex', gap: 10, marginTop: 8, flexWrap: 'wrap', alignItems: 'center' }}>
         {sejourActif && (
-          <button className="med-btn med-btn-primary" onClick={() => setShowOrdonnance(true)}>
+          <button
+            className="med-btn med-btn-primary"
+            onClick={() => setShowOrdonnance(true)}
+            disabled={!isResponsibleDoctor}
+            title={!isResponsibleDoctor ? 'Vous devez être le médecin responsable. Cliquez sur "Prendre en charge" d\'abord.' : ''}
+          >
             📋 Saisir une ordonnance
           </button>
         )}
