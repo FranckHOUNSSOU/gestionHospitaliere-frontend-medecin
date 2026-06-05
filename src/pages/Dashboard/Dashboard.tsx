@@ -109,7 +109,14 @@ export default function Dashboard() {
                 {initiales(s.patient.nom, s.patient.prenom)}
               </div>
               <div style={{ flex: 1 }}>
-                <div className="med-row-name">{s.patient.prenom} {s.patient.nom}</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                  <span className="med-row-name">{s.patient.prenom} {s.patient.nom}</span>
+                  {s.typeSejour && (
+                    <span className={`med-badge ${s.typeSejour === 'Hospitalisation' ? 'med-badge-blue' : s.typeSejour === 'Consultation' ? 'med-badge-green' : 'med-badge-red'}`} style={{ fontSize: 10 }}>
+                      {s.typeSejour === 'Hospitalisation' ? '🏥' : s.typeSejour === 'Consultation' ? '🩺' : '🚨'} {s.typeSejour}
+                    </span>
+                  )}
+                </div>
                 <div className="med-row-sub">IPP-{s.patient.numeroIpp} · {s.motifHospitalisation}</div>
               </div>
               <div className="med-row-right">
@@ -117,7 +124,7 @@ export default function Dashboard() {
                 <span style={{ fontSize: 10, color: 'var(--med-tx3)' }}>Admis</span>
               </div>
               <span className={`med-badge ${s.statut === 'actif' ? 'med-badge-yellow' : 'med-badge-gray'}`}>
-                {s.statut === 'actif' ? 'Hospitalisé' : 'Sorti'}
+                {s.statut === 'actif' ? 'En cours' : 'Sorti'}
               </span>
             </div>
           ))
