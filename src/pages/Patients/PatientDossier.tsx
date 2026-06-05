@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { Patient, Sejour } from '../../types/auth.types';
-import { getPatientDossier, getSejourActif, getHistoriqueSejours } from '../../services/medecinService';
+import { getPatientDossier, getSejourActif, getHistoriqueSejours, prendreEnCharge } from '../../services/medecinService';
+import { useAuth } from '../../context/AuthContext';
 import OrdonnanceModal from './OrdonnanceModal';
 
 interface Props {
@@ -23,6 +24,7 @@ function initiales(nom: string, prenom: string) {
 }
 
 export default function PatientDossier({ patient, onRetour }: Props) {
+  const { user } = useAuth();
   const [dossier,        setDossier]        = useState<Patient | null>(null);
   const [sejourActif,    setSejourActif]    = useState<Sejour | null>(null);
   const [historique,     setHistorique]     = useState<Sejour[]>([]);
@@ -30,6 +32,7 @@ export default function PatientDossier({ patient, onRetour }: Props) {
   const [showOrdonnance, setShowOrdonnance] = useState(false);
   const [loading,        setLoading]        = useState(true);
   const [saving,         setSaving]         = useState(false);
+  const [priseEnCharge,  setPriseEnCharge]  = useState(false);
   const [feedback,       setFeedback]       = useState<{ type: 'success' | 'error'; msg: string } | null>(null);
 
   useEffect(() => {
@@ -50,6 +53,22 @@ export default function PatientDossier({ patient, onRetour }: Props) {
     }
     load();
   }, [patient.id]);
+
+  async function handlePrendreEnCharge() {
+    if (!sejourActif || !user) return;
+    if (!window.confirm(`Prendre en charge ${pt.prenom} ${pt.nom} ? Vous deviendrez le médecin responsable de ce séjour.`)) return;
+    setPriseEnCharge(true);
+    try {
+      const res = await prendreEnCharge(sejourActif.id, user.id);
+      setSejourActif(res.data);
+      setFeedback({ type: 'success', msg: `Vous êtes maintenant le médecin responsable de ${pt.prenom} ${pt.nom}.` });
+    } catch {
+      setFeedback({ type: 'error', msg: 'Impossible de prendre en charge ce patient. Veuillez réessayer.' });
+    } finally {
+      setPriseEnCharge(false);
+      setTimeout(() => setFeedback(null), 4000);
+    }
+  }
 
   async function handleMettreAJour() {
     if (!autresSymptomes.trim()) return;
@@ -215,7 +234,7 @@ export default function PatientDossier({ patient, onRetour }: Props) {
                     </span>
                     <div style={{ flex: 1 }}>
                       <div className="med-row-name">{d.libelle}</div>
-                      <div className="med-row-sub">Type : {d.type} · Statut : {d.statut}{d.dateCreation && ` · ${formatDate(d.dateCreation)}`}</div>
+                      <div className="med-row-sub">Type : {d.type} · Statut : {d.statut}{d.createdAt && ` · ${formatDate(d.createdAt)}`}{d.saisiParNom && ` · Saisi par ${d.saisiParNom}`}</div>
                     </div>
                     <span className={`med-badge ${d.valide ? 'med-badge-green' : 'med-badge-yellow'}`}>
                       {d.valide ? 'Validé' : 'En attente'}
@@ -277,7 +296,7 @@ export default function PatientDossier({ patient, onRetour }: Props) {
       )}
 
       {/* Actions */}
-      <div style={{ display: 'flex', gap: 10, marginTop: 8 }}>
+      <div style={{ display: 'flex', gap: 10, marginTop: 8, flexWrap: 'wrap', alignItems: 'center' }}>
         {sejourActif && (
           <button className="med-btn med-btn-primary" onClick={() => setShowOrdonnance(true)}>
             📋 Saisir une ordonnance
@@ -290,6 +309,24 @@ export default function PatientDossier({ patient, onRetour }: Props) {
         >
           {saving ? 'Enregistrement...' : '💾 Mettre à jour le dossier'}
         </button>
+        {sejourActif && (
+          <button
+            className="med-btn"
+            style={{ borderColor: '#0891b2', color: '#0891b2' }}
+            onClick={handlePrendreEnCharge}
+            disabled={priseEnCharge}
+            title="Vous devenez le médecin responsable de ce séjour"
+          >
+            {priseEnCharge ? 'Traitement...' : '🏥 Prendre en charge'}
+          </button>
+        )}
+        {sejourActif?.medecinResponsable && (
+          <span style={{ fontSize: 12, color: 'var(--med-tx2)' }}>
+            Responsable actuel : <strong>
+              Dr. {sejourActif.medecinResponsable.user?.prenom} {sejourActif.medecinResponsable.user?.nom}
+            </strong>
+          </span>
+        )}
       </div>
 
       {/* Modal ordonnance */}

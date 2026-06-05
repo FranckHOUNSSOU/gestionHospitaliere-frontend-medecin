@@ -650,7 +650,7 @@ function SejourView({
                 <div className="med-row-name">{d.libelle}</div>
                 <div className="med-row-sub">
                   Type : {d.type} · Statut : {d.statut}
-                  {d.dateCreation && ` · ${fd(d.dateCreation)}`}
+                  {d.createdAt && ` · ${fd(d.createdAt)}`}{d.saisiParNom && ` · Saisi par ${d.saisiParNom}`}
                 </div>
               </div>
             </div>
