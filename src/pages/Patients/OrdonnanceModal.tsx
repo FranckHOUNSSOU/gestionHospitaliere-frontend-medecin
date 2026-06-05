@@ -61,8 +61,9 @@ export default function OrdonnanceModal({ patient, sejour, onClose, onSuccess }:
       );
       onSuccess?.();
       onClose();
-    } catch {
-      setError("Erreur lors de l'enregistrement. Veuillez réessayer.");
+    } catch (e: unknown) {
+      const msg = (e instanceof Error) ? e.message : "Erreur lors de l'enregistrement.";
+      setError(msg);
     } finally {
       setLoading(false);
     }

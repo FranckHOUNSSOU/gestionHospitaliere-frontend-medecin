@@ -298,15 +298,15 @@ export default function PatientDossier({ patient, onRetour }: Props) {
 
       {/* Actions */}
       <div style={{ display: 'flex', gap: 10, marginTop: 8, flexWrap: 'wrap', alignItems: 'center' }}>
-        {sejourActif && (
-          <button
-            className="med-btn med-btn-primary"
-            onClick={() => setShowOrdonnance(true)}
-            disabled={!isResponsibleDoctor}
-            title={!isResponsibleDoctor ? 'Vous devez être le médecin responsable. Cliquez sur "Prendre en charge" d\'abord.' : ''}
-          >
+        {sejourActif && isResponsibleDoctor && (
+          <button className="med-btn med-btn-primary" onClick={() => setShowOrdonnance(true)}>
             📋 Saisir une ordonnance
           </button>
+        )}
+        {sejourActif && !isResponsibleDoctor && (
+          <div style={{ fontSize: 12, color: '#92400e', background: '#fef3c7', border: '1px solid #fcd34d', borderRadius: 6, padding: '6px 12px' }}>
+            ⚠ Prescription réservée au médecin responsable — cliquez sur <strong>"Prendre en charge"</strong> d'abord
+          </div>
         )}
         <button
           className="med-btn med-btn-green"
