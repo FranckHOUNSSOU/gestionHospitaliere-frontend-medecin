@@ -73,6 +73,9 @@ export const updateDiagnostic = (
 export const updateSoin = (sejourId: string, soinId: string, data: { valide: boolean }) =>
   apiClient.patch<SoinInfirmier>(`/sejours/${sejourId}/soins/${soinId}`, data);
 
+export const prendreEnCharge = (sejourId: string, userId: string) =>
+  apiClient.patch<Sejour>(`/sejours/${sejourId}`, { medecinResponsableId: userId });
+
 export const createPrescription = (sejourId: string, data: CreatePrescriptionDto) =>
   apiClient.post<Prescription>(`/sejours/${sejourId}/prescriptions`, data);
 

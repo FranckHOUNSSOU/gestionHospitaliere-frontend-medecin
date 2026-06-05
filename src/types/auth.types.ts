@@ -147,8 +147,7 @@ export interface Diagnostic {
   type: 'Principal' | 'Associé' | 'Complication';
   statut: 'Confirmé' | 'Suspecté' | 'Écarté';
   valide?: boolean;
-  dateCreation?: string;
-  saisiPar?: string;
+  createdAt?: string;
   saisiParId?: string | null;
   saisiParNom?: string | null;
   valideParId?: string | null;
