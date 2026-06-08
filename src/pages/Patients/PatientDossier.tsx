@@ -4,41 +4,17 @@ import { getPatientDossier, getSejourActif, getHistoriqueSejours, prendreEnCharg
 import { useAuth } from '../../context/AuthContext';
 import OrdonnanceModal from './OrdonnanceModal';
 
-function printOrdonnance(patient: Patient, sejour: Sejour, prescriptions: Prescription[]) {
-  const actives = prescriptions.filter(p => p.statut === 'Active');
+function printSinglePrescription(patient: Patient, prescription: Prescription) {
+  const base    = window.location.origin;
   const today   = new Date().toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' });
-  const medResp = sejour.medecinResponsable?.user;
-
-  const lignes = actives.map((p, i) => {
-    const details = [
-      p.dose && p.unite ? `${p.dose} ${p.unite}` : null,
-      p.frequence,
-      p.voieAdministration,
-    ].filter(Boolean).join(' — ');
-    const duree = p.dateDebut || p.dateFin
-      ? `<div style="font-size:12px;color:#555;margin-top:2px;">
-           Du ${p.dateDebut ? new Date(p.dateDebut).toLocaleDateString('fr-FR') : '—'}
-           au ${p.dateFin   ? new Date(p.dateFin).toLocaleDateString('fr-FR')   : '—'}
-         </div>`
-      : '';
-    const obs = p.observations
-      ? `<div style="font-size:12px;color:#555;font-style:italic;margin-top:2px;">${p.observations}</div>`
-      : '';
-    const prescPar = p.medecinPrescripteur
-      ? `<div style="font-size:11px;color:#888;margin-top:2px;">Prescrit par Dr. ${p.medecinPrescripteur.user.prenom} ${p.medecinPrescripteur.user.nom}</div>`
-      : '';
-    return `
-      <div style="margin-bottom:14px;padding:10px 14px;border-left:3px solid #1d4ed8;background:#f8faff;">
-        <div style="font-size:14px;font-weight:700;color:#111;">
-          ${i + 1}. ${p.nomMedicamentDci}${p.nomCommercial ? ` <span style="font-weight:400;color:#555;">(${p.nomCommercial})</span>` : ''}
-        </div>
-        <div style="font-size:13px;color:#333;margin-top:3px;">${details}</div>
-        ${duree}${obs}${prescPar}
-      </div>`;
-  }).join('');
-
-  const ddn = patient.dateNaissance
-    ? `Né(e) le ${new Date(patient.dateNaissance).toLocaleDateString('fr-FR')}`
+  const medecin = prescription.medecinPrescripteur?.user;
+  const details = [
+    prescription.dose && prescription.unite ? `${prescription.dose} ${prescription.unite}` : null,
+    prescription.frequence,
+    prescription.voieAdministration,
+  ].filter(Boolean).join(' — ');
+  const duree = prescription.dateDebut || prescription.dateFin
+    ? `Du ${prescription.dateDebut ? new Date(prescription.dateDebut).toLocaleDateString('fr-FR') : '—'} au ${prescription.dateFin ? new Date(prescription.dateFin).toLocaleDateString('fr-FR') : '—'}`
     : '';
 
   const html = `<!DOCTYPE html>
@@ -48,73 +24,93 @@ function printOrdonnance(patient: Patient, sejour: Sejour, prescriptions: Prescr
   <title>Ordonnance — ${patient.prenom} ${patient.nom}</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: Arial, sans-serif; color: #111; padding: 32px; font-size: 13px; }
+    body { font-family: Arial, sans-serif; color: #111; padding: 28px 36px; font-size: 13px; max-width: 210mm; margin: 0 auto; }
     @media print {
-      body { padding: 16px; }
-      .no-print { display: none; }
-      @page { margin: 1.5cm; }
+      body { padding: 0; }
+      .no-print { display: none !important; }
+      @page { size: A4 portrait; margin: 12mm 15mm; }
+      * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
     }
-    .header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #1d4ed8; padding-bottom: 12px; margin-bottom: 18px; }
-    .hospital { font-size: 18px; font-weight: 800; color: #1d4ed8; }
-    .hospital-sub { font-size: 11px; color: #555; margin-top: 2px; }
-    .date-block { text-align: right; font-size: 12px; color: #555; }
-    .doctor-block { background: #f0f4ff; border-radius: 6px; padding: 10px 14px; margin-bottom: 14px; }
-    .patient-block { border: 1px solid #ddd; border-radius: 6px; padding: 10px 14px; margin-bottom: 18px; }
-    .label { font-size: 10px; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
-    .ordonnance-title { font-size: 16px; font-weight: 800; color: #1d4ed8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px; border-bottom: 1px dashed #1d4ed8; padding-bottom: 8px; }
-    .signature-block { margin-top: 32px; display: flex; justify-content: flex-end; }
-    .signature-inner { border-top: 1px solid #333; padding-top: 8px; text-align: center; min-width: 200px; font-size: 12px; color: #555; }
-    .btn-print { margin-bottom: 20px; padding: 9px 20px; background: #1d4ed8; color: #fff; border: none; border-radius: 6px; font-size: 13px; cursor: pointer; }
+    .btn-print { display: block; margin-bottom: 20px; padding: 9px 20px; background: #1e3a5f; color: #fff; border: none; border-radius: 6px; font-size: 13px; cursor: pointer; }
+    .header-grid { display: grid; grid-template-columns: 1fr 1.8fr 1fr; align-items: center; gap: 8px; padding-bottom: 10px; border-bottom: 2px solid #1e3a5f; margin-bottom: 14px; }
+    .header-center { text-align: center; font-size: 10px; font-weight: 800; color: #1e3a5f; text-transform: uppercase; line-height: 1.7; }
+    .header-img { display: flex; justify-content: center; }
+    .title { text-align: center; font-size: 13px; font-weight: 800; color: #1e3a5f; text-decoration: underline; text-transform: uppercase; letter-spacing: 0.06em; margin: 10px 0 16px; }
+    .doctor-row { font-size: 13px; margin-bottom: 14px; }
+    .patient-block { border: 1px solid #1e3a5f; border-radius: 3px; margin-bottom: 18px; overflow: hidden; }
+    .patient-header { background: #1e3a5f; padding: 5px 12px; color: #fff; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+    .patient-body { padding: 8px 12px; }
+    .patient-name { font-size: 15px; font-weight: 700; }
+    .med-block { border-left: 3px solid #1e3a5f; background: #f8faff; padding: 12px 16px; margin-bottom: 12px; }
+    .med-name { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+    .med-detail { font-size: 12px; color: #444; margin-top: 3px; }
+    .med-obs { font-size: 12px; color: #666; font-style: italic; margin-top: 4px; }
+    .signature-wrap { margin-top: 48px; display: flex; justify-content: flex-end; }
+    .signature-box { min-width: 220px; text-align: center; }
+    .signature-line { border-top: 1px solid #333; padding-top: 8px; font-size: 12px; color: #555; margin-top: 40px; }
   </style>
 </head>
 <body>
   <button class="btn-print no-print" onclick="window.print()">Imprimer</button>
 
-  <div class="header">
-    <div>
-      <div class="hospital">CHU-MEL</div>
-      <div class="hospital-sub">Centre Hospitalier Universitaire Mère et Enfant</div>
+  <!-- En-tête officiel CHU-MEL -->
+  <div class="header-grid">
+    <div class="header-img">
+      <img src="${base}/benin_embleme.png" alt="Armoiries du Bénin" style="height:90px;object-fit:contain;" />
     </div>
-    <div class="date-block">
-      <strong>ORDONNANCE</strong><br />
-      ${today}<br />
-      Séjour : ${sejour.numeroSejour}
+    <div class="header-center">
+      CENTRE HOSPITALIER UNIVERSITAIRE<br />
+      DE LA MÈRE ET DE L'ENFANT-LAGUNE<br />
+      (CHU-MEL)<br />
+      *****
+    </div>
+    <div class="header-img">
+      <img src="${base}/chuMel-logo.png" alt="CHU-MEL" style="height:64px;object-fit:contain;" />
     </div>
   </div>
 
-  ${medResp ? `
-  <div class="doctor-block">
-    <div class="label">Médecin prescripteur</div>
-    <div style="font-size:14px;font-weight:700;">Dr. ${medResp.prenom} ${medResp.nom}</div>
-  </div>` : ''}
+  <div class="title">Ordonnance Médicale</div>
 
+  <!-- Médecin prescripteur -->
+  <div class="doctor-row">
+    ${medecin
+      ? `<strong>Dr. ${medecin.prenom} ${medecin.nom}</strong>`
+      : '<em style="color:#888;">Médecin prescripteur non renseigné</em>'}
+    <span style="float:right;font-size:12px;color:#555;">${today}</span>
+  </div>
+
+  <!-- Patient -->
   <div class="patient-block">
-    <div class="label">Patient</div>
-    <div style="font-size:15px;font-weight:700;">${patient.prenom} ${patient.nom}</div>
-    <div style="font-size:12px;color:#555;margin-top:3px;">
-      IPP : ${patient.numeroIpp}
-      ${ddn ? ' · ' + ddn : ''}
-      ${patient.sexe ? ' · ' + (patient.sexe === 'F' ? 'Féminin' : 'Masculin') : ''}
+    <div class="patient-header">Patient</div>
+    <div class="patient-body">
+      <div class="patient-name">${patient.prenom} ${patient.nom}</div>
     </div>
   </div>
 
-  <div class="ordonnance-title">Prescriptions actives (${actives.length})</div>
+  <!-- Médicament -->
+  <div class="med-block">
+    <div class="med-name">
+      ${prescription.nomMedicamentDci}
+      ${prescription.nomCommercial ? `<span style="font-weight:400;font-size:13px;color:#555;">(${prescription.nomCommercial})</span>` : ''}
+    </div>
+    ${details ? `<div class="med-detail">${details}</div>` : ''}
+    ${duree   ? `<div class="med-detail">${duree}</div>` : ''}
+    ${prescription.observations ? `<div class="med-obs">${prescription.observations}</div>` : ''}
+  </div>
 
-  ${actives.length === 0
-    ? '<p style="color:#888;font-style:italic;">Aucune prescription active.</p>'
-    : lignes
-  }
-
-  <div class="signature-block">
-    <div class="signature-inner">
-      Signature du médecin<br />
-      ${medResp ? `Dr. ${medResp.prenom} ${medResp.nom}` : ''}
+  <!-- Signature -->
+  <div class="signature-wrap">
+    <div class="signature-box">
+      <div style="font-size:11px;color:#555;text-align:left;">Signature et cachet du médecin</div>
+      <div class="signature-line">
+        ${medecin ? `Dr. ${medecin.prenom} ${medecin.nom}` : ''}
+      </div>
     </div>
   </div>
 </body>
 </html>`;
 
-  const win = window.open('', '_blank', 'width=800,height=900');
+  const win = window.open('', '_blank', 'width=820,height=960');
   if (!win) return;
   win.document.write(html);
   win.document.close();
@@ -372,16 +368,7 @@ export default function PatientDossier({ patient, onRetour }: Props) {
       {/* Prescriptions du séjour */}
       {sejourActif && (sejourActif.prescriptions ?? []).length > 0 && (
         <>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-            <div className="med-section-title" style={{ margin: 0 }}>Prescriptions — séjour en cours</div>
-            <button
-              className="med-btn"
-              style={{ fontSize: 12, gap: 6 }}
-              onClick={() => printOrdonnance(pt, sejourActif, sejourActif.prescriptions ?? [])}
-            >
-              🖨 Imprimer l'ordonnance
-            </button>
-          </div>
+          <div className="med-section-title">Prescriptions — séjour en cours</div>
           <div className="med-card" style={{ marginBottom: 16 }}>
             {(sejourActif.prescriptions ?? []).map((p) => (
               <div key={p.id} className="med-row" style={{ cursor: 'default', alignItems: 'flex-start', gap: 10 }}>
@@ -401,9 +388,19 @@ export default function PatientDossier({ patient, onRetour }: Props) {
                     </div>
                   )}
                 </div>
-                <span className={`med-badge ${p.statut === 'Active' ? 'med-badge-green' : p.statut === 'Suspendue' ? 'med-badge-yellow' : 'med-badge-gray'}`}>
-                  {p.statut}
-                </span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
+                  <span className={`med-badge ${p.statut === 'Active' ? 'med-badge-green' : p.statut === 'Suspendue' ? 'med-badge-yellow' : 'med-badge-gray'}`}>
+                    {p.statut}
+                  </span>
+                  <button
+                    className="med-btn"
+                    style={{ fontSize: 11, padding: '3px 10px', height: 26 }}
+                    onClick={() => printSinglePrescription(pt, p)}
+                    title="Imprimer cette ordonnance"
+                  >
+                    Imprimer
+                  </button>
+                </div>
               </div>
             ))}
           </div>
@@ -471,15 +468,6 @@ export default function PatientDossier({ patient, onRetour }: Props) {
               Dr. {sejourActif.medecinResponsable.user?.prenom} {sejourActif.medecinResponsable.user?.nom}
             </strong>
           </span>
-        )}
-        {sejourActif && (
-          <button
-            className="med-btn"
-            style={{ borderColor: '#6366f1', color: '#6366f1', marginLeft: 'auto' }}
-            onClick={() => printOrdonnance(pt, sejourActif, sejourActif.prescriptions ?? [])}
-          >
-            Imprimer l'ordonnance
-          </button>
         )}
       </div>
 
