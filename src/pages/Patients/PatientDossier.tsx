@@ -151,6 +151,13 @@ export default function PatientDossier({ patient, onRetour }: Props) {
   const [priseEnCharge,  setPriseEnCharge]  = useState(false);
   const [feedback,       setFeedback]       = useState<{ type: 'success' | 'error'; msg: string } | null>(null);
 
+  async function reloadSejourActif() {
+    try {
+      const res = await getSejourActif(patient.id);
+      setSejourActif(res.data);
+    } catch { /* silent */ }
+  }
+
   useEffect(() => {
     async function load() {
       setLoading(true);
@@ -465,6 +472,15 @@ export default function PatientDossier({ patient, onRetour }: Props) {
             </strong>
           </span>
         )}
+        {sejourActif && (
+          <button
+            className="med-btn"
+            style={{ borderColor: '#6366f1', color: '#6366f1', marginLeft: 'auto' }}
+            onClick={() => printOrdonnance(pt, sejourActif, sejourActif.prescriptions ?? [])}
+          >
+            Imprimer l'ordonnance
+          </button>
+        )}
       </div>
 
       {/* Modal ordonnance */}
@@ -473,7 +489,10 @@ export default function PatientDossier({ patient, onRetour }: Props) {
           patient={pt}
           sejour={sejourActif}
           onClose={() => setShowOrdonnance(false)}
-          onSuccess={() => setFeedback({ type: 'success', msg: 'Ordonnance enregistrée avec succès.' })}
+          onSuccess={() => {
+            setFeedback({ type: 'success', msg: 'Ordonnance enregistrée avec succès.' });
+            reloadSejourActif();
+          }}
         />
       )}
     </div>
