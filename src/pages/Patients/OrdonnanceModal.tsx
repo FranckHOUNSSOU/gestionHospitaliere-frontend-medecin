@@ -74,7 +74,7 @@ export default function OrdonnanceModal({ patient, sejour, onClose, onSuccess }:
       <div className="med-modal">
         <div className="med-modal-head">
           <div className="med-modal-title">
-            📋 Saisir une ordonnance — {patient.prenom} {patient.nom}
+            Saisir une ordonnance — {patient.prenom} {patient.nom}
           </div>
           <button className="med-modal-close" onClick={onClose}>×</button>
         </div>
