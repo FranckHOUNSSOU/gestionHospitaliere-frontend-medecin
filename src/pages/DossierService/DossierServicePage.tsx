@@ -539,8 +539,13 @@ function DossierView({
                       >
                         <StatusBadge active={actif} />
                         <div style={{ flex: 1 }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
                             <span className="med-row-name">{s.numeroSejour}</span>
+                            {s.typeSejour && (
+                              <span className={`med-badge ${s.typeSejour === 'Hospitalisation' ? 'med-badge-blue' : s.typeSejour === 'Consultation' ? 'med-badge-green' : 'med-badge-red'}`} style={{ fontSize: 10 }}>
+                                {s.typeSejour}
+                              </span>
+                            )}
                             {s.diagnostics && s.diagnostics.length > 0 && (
                               <span className="med-badge med-badge-blue" style={{ fontSize: 10 }}>
                                 {s.diagnostics.length} diag.
