@@ -186,7 +186,7 @@ export default function SejourHistorique() {
                       {s.patient.numeroIpp}
                     </span>
                     <span className={`med-badge ${TYPE_COLORS[type] ?? 'med-badge-gray'}`} style={{ fontSize: 10 }}>
-                      {TYPE_ICON[type]} {type}
+                      {type}
                     </span>
                   </div>
                   <div className="med-row-sub">{s.motifHospitalisation}</div>

@@ -113,7 +113,7 @@ export default function Dashboard() {
                   <span className="med-row-name">{s.patient.prenom} {s.patient.nom}</span>
                   {s.typeSejour && (
                     <span className={`med-badge ${s.typeSejour === 'Hospitalisation' ? 'med-badge-blue' : s.typeSejour === 'Consultation' ? 'med-badge-green' : 'med-badge-red'}`} style={{ fontSize: 10 }}>
-                      {s.typeSejour === 'Hospitalisation' ? '🏥' : s.typeSejour === 'Consultation' ? '🩺' : '🚨'} {s.typeSejour}
+                      {s.typeSejour}
                     </span>
                   )}
                 </div>
