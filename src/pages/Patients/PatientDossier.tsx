@@ -458,7 +458,7 @@ export default function PatientDossier({ patient, onRetour }: Props) {
       <div style={{ display: 'flex', gap: 10, marginTop: 8, flexWrap: 'wrap', alignItems: 'center' }}>
         {sejourActif && isResponsibleDoctor && (
           <button className="med-btn med-btn-primary" onClick={() => setShowOrdonnance(true)}>
-            📋 Saisir une ordonnance
+            Saisir une ordonnance
           </button>
         )}
         {sejourActif && !isResponsibleDoctor && (
@@ -471,7 +471,7 @@ export default function PatientDossier({ patient, onRetour }: Props) {
           onClick={handleMettreAJour}
           disabled={saving || !autresSymptomes.trim()}
         >
-          {saving ? 'Enregistrement...' : '💾 Mettre à jour le dossier'}
+          {saving ? 'Enregistrement...' : 'Mettre à jour le dossier'}
         </button>
         {sejourActif && (
           <button
@@ -481,7 +481,7 @@ export default function PatientDossier({ patient, onRetour }: Props) {
             disabled={priseEnCharge}
             title="Vous devenez le médecin responsable de ce séjour"
           >
-            {priseEnCharge ? 'Traitement...' : '🏥 Prendre en charge'}
+            {priseEnCharge ? 'Traitement...' : 'Prendre en charge'}
           </button>
         )}
         {sejourActif?.medecinResponsable && (
