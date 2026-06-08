@@ -4,18 +4,37 @@ import { getPatientDossier, getSejourActif, getHistoriqueSejours, prendreEnCharg
 import { useAuth } from '../../context/AuthContext';
 import OrdonnanceModal from './OrdonnanceModal';
 
-function printSinglePrescription(patient: Patient, prescription: Prescription) {
-  const base    = window.location.origin;
-  const today   = new Date().toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' });
-  const medecin = prescription.medecinPrescripteur?.user;
-  const details = [
-    prescription.dose && prescription.unite ? `${prescription.dose} ${prescription.unite}` : null,
-    prescription.frequence,
-    prescription.voieAdministration,
-  ].filter(Boolean).join(' — ');
-  const duree = prescription.dateDebut || prescription.dateFin
-    ? `Du ${prescription.dateDebut ? new Date(prescription.dateDebut).toLocaleDateString('fr-FR') : '—'} au ${prescription.dateFin ? new Date(prescription.dateFin).toLocaleDateString('fr-FR') : '—'}`
-    : '';
+function printGroupePrescriptions(
+  patient: Patient,
+  medecin: { prenom: string; nom: string } | null | undefined,
+  prescriptions: Prescription[],
+) {
+  const base  = window.location.origin;
+  const today = new Date().toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' });
+
+  const lignes = prescriptions.map((p, i) => {
+    const details = [
+      p.dose && p.unite ? `${p.dose} ${p.unite}` : null,
+      p.frequence,
+      p.voieAdministration,
+    ].filter(Boolean).join(' — ');
+    const duree = p.dateDebut || p.dateFin
+      ? `Du ${p.dateDebut ? new Date(p.dateDebut).toLocaleDateString('fr-FR') : '—'} au ${p.dateFin ? new Date(p.dateFin).toLocaleDateString('fr-FR') : '—'}`
+      : '';
+    return `
+      <div class="med-block">
+        <div class="med-num">${i + 1}.</div>
+        <div class="med-content">
+          <div class="med-name">
+            ${p.nomMedicamentDci}
+            ${p.nomCommercial ? `<span style="font-weight:400;font-size:13px;color:#555;">(${p.nomCommercial})</span>` : ''}
+          </div>
+          ${details ? `<div class="med-detail">${details}</div>` : ''}
+          ${duree   ? `<div class="med-detail">${duree}</div>` : ''}
+          ${p.observations ? `<div class="med-obs">${p.observations}</div>` : ''}
+        </div>
+      </div>`;
+  }).join('');
 
   const html = `<!DOCTYPE html>
 <html lang="fr">
@@ -35,14 +54,16 @@ function printSinglePrescription(patient: Patient, prescription: Prescription) {
     .header-grid { display: grid; grid-template-columns: 1fr 1.8fr 1fr; align-items: center; gap: 8px; padding-bottom: 10px; border-bottom: 2px solid #1e3a5f; margin-bottom: 14px; }
     .header-center { text-align: center; font-size: 10px; font-weight: 800; color: #1e3a5f; text-transform: uppercase; line-height: 1.7; }
     .header-img { display: flex; justify-content: center; }
-    .title { text-align: center; font-size: 13px; font-weight: 800; color: #1e3a5f; text-decoration: underline; text-transform: uppercase; letter-spacing: 0.06em; margin: 10px 0 16px; }
-    .doctor-row { font-size: 13px; margin-bottom: 14px; }
+    .title { text-align: center; font-size: 13px; font-weight: 800; color: #1e3a5f; text-decoration: underline; text-transform: uppercase; letter-spacing: 0.06em; margin: 10px 0 14px; }
+    .doctor-row { font-size: 13px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: baseline; }
     .patient-block { border: 1px solid #1e3a5f; border-radius: 3px; margin-bottom: 18px; overflow: hidden; }
     .patient-header { background: #1e3a5f; padding: 5px 12px; color: #fff; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
     .patient-body { padding: 8px 12px; }
     .patient-name { font-size: 15px; font-weight: 700; }
-    .med-block { border-left: 3px solid #1e3a5f; background: #f8faff; padding: 12px 16px; margin-bottom: 12px; }
-    .med-name { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+    .med-block { display: flex; gap: 10px; margin-bottom: 12px; padding: 10px 14px; border-left: 3px solid #1e3a5f; background: #f8faff; }
+    .med-num { font-size: 14px; font-weight: 700; color: #1e3a5f; min-width: 20px; }
+    .med-content { flex: 1; }
+    .med-name { font-size: 14px; font-weight: 700; margin-bottom: 3px; }
     .med-detail { font-size: 12px; color: #444; margin-top: 3px; }
     .med-obs { font-size: 12px; color: #666; font-style: italic; margin-top: 4px; }
     .signature-wrap { margin-top: 48px; display: flex; justify-content: flex-end; }
@@ -53,7 +74,6 @@ function printSinglePrescription(patient: Patient, prescription: Prescription) {
 <body>
   <button class="btn-print no-print" onclick="window.print()">Imprimer</button>
 
-  <!-- En-tête officiel CHU-MEL -->
   <div class="header-grid">
     <div class="header-img">
       <img src="${base}/benin_embleme.png" alt="Armoiries du Bénin" style="height:90px;object-fit:contain;" />
@@ -71,15 +91,11 @@ function printSinglePrescription(patient: Patient, prescription: Prescription) {
 
   <div class="title">Ordonnance Médicale</div>
 
-  <!-- Médecin prescripteur -->
   <div class="doctor-row">
-    ${medecin
-      ? `<strong>Dr. ${medecin.prenom} ${medecin.nom}</strong>`
-      : '<em style="color:#888;">Médecin prescripteur non renseigné</em>'}
-    <span style="float:right;font-size:12px;color:#555;">${today}</span>
+    <strong>${medecin ? `Dr. ${medecin.prenom} ${medecin.nom}` : 'Médecin non renseigné'}</strong>
+    <span style="font-size:12px;color:#555;">${today}</span>
   </div>
 
-  <!-- Patient -->
   <div class="patient-block">
     <div class="patient-header">Patient</div>
     <div class="patient-body">
@@ -87,18 +103,8 @@ function printSinglePrescription(patient: Patient, prescription: Prescription) {
     </div>
   </div>
 
-  <!-- Médicament -->
-  <div class="med-block">
-    <div class="med-name">
-      ${prescription.nomMedicamentDci}
-      ${prescription.nomCommercial ? `<span style="font-weight:400;font-size:13px;color:#555;">(${prescription.nomCommercial})</span>` : ''}
-    </div>
-    ${details ? `<div class="med-detail">${details}</div>` : ''}
-    ${duree   ? `<div class="med-detail">${duree}</div>` : ''}
-    ${prescription.observations ? `<div class="med-obs">${prescription.observations}</div>` : ''}
-  </div>
+  ${lignes}
 
-  <!-- Signature -->
   <div class="signature-wrap">
     <div class="signature-box">
       <div style="font-size:11px;color:#555;text-align:left;">Signature et cachet du médecin</div>
@@ -365,47 +371,63 @@ export default function PatientDossier({ patient, onRetour }: Props) {
         </>
       )}
 
-      {/* Prescriptions du séjour */}
-      {sejourActif && (sejourActif.prescriptions ?? []).length > 0 && (
-        <>
-          <div className="med-section-title">Prescriptions — séjour en cours</div>
-          <div className="med-card" style={{ marginBottom: 16 }}>
-            {(sejourActif.prescriptions ?? []).map((p) => (
-              <div key={p.id} className="med-row" style={{ cursor: 'default', alignItems: 'flex-start', gap: 10 }}>
-                <div style={{ flex: 1 }}>
-                  <div className="med-row-name">
-                    {p.nomMedicamentDci}
-                    {p.nomCommercial && <span style={{ fontSize: 11, color: 'var(--med-tx2)', marginLeft: 6 }}>({p.nomCommercial})</span>}
-                  </div>
-                  <div className="med-row-sub">
-                    {[p.dose, p.unite, p.frequence, p.voieAdministration].filter(Boolean).join(' · ')}
-                    {p.observations && <> · {p.observations}</>}
-                  </div>
-                  {p.medecinPrescripteur && (
-                    <div style={{ fontSize: 11, color: 'var(--med-tx2)', marginTop: 2 }}>
-                      Prescrit par <strong>Dr. {p.medecinPrescripteur.user.prenom} {p.medecinPrescripteur.user.nom}</strong>
-                      {p.createdAt && <> le {formatDate(p.createdAt)}</>}
-                    </div>
-                  )}
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
-                  <span className={`med-badge ${p.statut === 'Active' ? 'med-badge-green' : p.statut === 'Suspendue' ? 'med-badge-yellow' : 'med-badge-gray'}`}>
-                    {p.statut}
+      {/* Prescriptions du séjour — groupées par médecin */}
+      {sejourActif && (sejourActif.prescriptions ?? []).length > 0 && (() => {
+        // Grouper par prescripteur (id ou 'inconnu')
+        const groups: { key: string; medecin: { id: string; user: { prenom: string; nom: string } } | null; items: typeof sejourActif.prescriptions }[] = [];
+        const seen: Record<string, number> = {};
+        for (const p of sejourActif.prescriptions ?? []) {
+          const k = p.medecinPrescripteur?.id ?? 'inconnu';
+          if (seen[k] === undefined) {
+            seen[k] = groups.length;
+            groups.push({ key: k, medecin: p.medecinPrescripteur ?? null, items: [] });
+          }
+          groups[seen[k]].items!.push(p);
+        }
+        return (
+          <>
+            <div className="med-section-title">Prescriptions — séjour en cours</div>
+            {groups.map(g => (
+              <div key={g.key} className="med-card" style={{ marginBottom: 14 }}>
+                {/* En-tête du groupe */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 16px', borderBottom: '1px solid var(--med-border)', background: 'var(--med-gray-50)' }}>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--med-tx)' }}>
+                    {g.medecin
+                      ? `Dr. ${g.medecin.user.prenom} ${g.medecin.user.nom}`
+                      : 'Médecin non renseigné'}
                   </span>
                   <button
                     className="med-btn"
-                    style={{ fontSize: 11, padding: '3px 10px', height: 26 }}
-                    onClick={() => printSinglePrescription(pt, p)}
-                    title="Imprimer cette ordonnance"
+                    style={{ fontSize: 11, padding: '4px 12px' }}
+                    onClick={() => printGroupePrescriptions(pt, g.medecin?.user ?? null, g.items ?? [])}
                   >
-                    Imprimer
+                    Imprimer l'ordonnance
                   </button>
                 </div>
+                {/* Médicaments du groupe */}
+                {(g.items ?? []).map((p, i) => (
+                  <div key={p.id} className="med-row" style={{ cursor: 'default', alignItems: 'flex-start' }}>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--med-blue)', minWidth: 20 }}>{i + 1}.</span>
+                    <div style={{ flex: 1 }}>
+                      <div className="med-row-name">
+                        {p.nomMedicamentDci}
+                        {p.nomCommercial && <span style={{ fontSize: 11, color: 'var(--med-tx2)', marginLeft: 6 }}>({p.nomCommercial})</span>}
+                      </div>
+                      <div className="med-row-sub">
+                        {[p.dose && p.unite ? `${p.dose} ${p.unite}` : null, p.frequence, p.voieAdministration].filter(Boolean).join(' · ')}
+                        {p.observations && <> · {p.observations}</>}
+                      </div>
+                    </div>
+                    <span className={`med-badge ${p.statut === 'Active' ? 'med-badge-green' : p.statut === 'Suspendue' ? 'med-badge-yellow' : 'med-badge-gray'}`}>
+                      {p.statut}
+                    </span>
+                  </div>
+                ))}
               </div>
             ))}
-          </div>
-        </>
-      )}
+          </>
+        );
+      })()}
 
       {/* Historique séjours */}
       {historique.length > 0 && (
