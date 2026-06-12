@@ -859,7 +859,7 @@ export default function ProfilPage() {
               </div>
               <div className="med-form-field">
                 <label className="med-label"><Phone size={10} style={{ display: 'inline', marginRight: 4 }} />Téléphone d'urgence</label>
-                <PhoneInput defaultCountry="bj" value={fIdent.telephoneUrgence} onChange={(phone) => setFIdent(p => ({ ...p, telephoneUrgence: phone }))} inputClassName="med-input" />
+                <PhoneInput defaultCountry="bj" value={fIdent.telephoneUrgence} onChange={(phone) => setFIdent(p => ({ ...p, telephoneUrgence: phone }))} className="med-phone-input" />
               </div>
               <div className="med-form-field" style={{ gridColumn: 'span 2' }}>
                 <label className="med-label">Photo de profil</label>
