@@ -4,6 +4,7 @@ import {
   Stethoscope, Briefcase, CheckCircle, AlertTriangle, X,
   Plus, Trash2, ChevronRight, Clock,
 } from 'lucide-react';
+import { PhoneInput } from 'react-international-phone';
 import {
   getMonProfilMedecin,
   updateMonProfilMedecin,
@@ -858,9 +859,7 @@ export default function ProfilPage() {
               </div>
               <div className="med-form-field">
                 <label className="med-label"><Phone size={10} style={{ display: 'inline', marginRight: 4 }} />Téléphone d'urgence</label>
-                <input className="med-input" type="tel" placeholder="+229 97 00 00 00"
-                  value={fIdent.telephoneUrgence}
-                  onChange={e => setFIdent(p => ({ ...p, telephoneUrgence: e.target.value }))} />
+                <PhoneInput defaultCountry="bj" value={fIdent.telephoneUrgence} onChange={(phone) => setFIdent(p => ({ ...p, telephoneUrgence: phone }))} inputClassName="med-input" />
               </div>
               <div className="med-form-field" style={{ gridColumn: 'span 2' }}>
                 <label className="med-label">Photo de profil</label>
