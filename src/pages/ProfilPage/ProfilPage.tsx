@@ -295,7 +295,7 @@ function DiplomeModal({ medecinId, onClose, onSaved }: DiplomeModalProps) {
           <div className="med-form-grid med-form-grid-2" style={{ rowGap: 12 }}>
             <div className="med-form-field" style={{ gridColumn: 'span 2' }}>
               <label className="med-label">Intitulé du diplôme *</label>
-              <input className="med-input" placeholder="ex : Doctorat en médecine générale"
+              <input className="med-input" 
                 value={form.intitule} onChange={e => setForm(p => ({ ...p, intitule: e.target.value }))} />
             </div>
             <div className="med-form-field">
@@ -312,13 +312,13 @@ function DiplomeModal({ medecinId, onClose, onSaved }: DiplomeModalProps) {
             </div>
             <div className="med-form-field">
               <label className="med-label">Établissement</label>
-              <input className="med-input" placeholder="ex : Université d'Abomey-Calavi"
+              <input className="med-input" 
                 value={form.etablissement ?? ''}
                 onChange={e => setForm(p => ({ ...p, etablissement: e.target.value || undefined }))} />
             </div>
             <div className="med-form-field">
               <label className="med-label">Pays</label>
-              <input className="med-input" placeholder="ex : Bénin"
+              <input className="med-input" 
                 value={form.pays ?? ''}
                 onChange={e => setForm(p => ({ ...p, pays: e.target.value || undefined }))} />
             </div>
@@ -379,12 +379,12 @@ function AccreditationModal({ medecinId, onClose, onSaved }: AccreditationModalP
           <div className="med-form-grid med-form-grid-2" style={{ rowGap: 12 }}>
             <div className="med-form-field" style={{ gridColumn: 'span 2' }}>
               <label className="med-label">Intitulé de la certification *</label>
-              <input className="med-input" placeholder="ex : Accréditation en chirurgie cardiaque"
+              <input className="med-input" 
                 value={form.intitule} onChange={e => setForm(p => ({ ...p, intitule: e.target.value }))} />
             </div>
             <div className="med-form-field" style={{ gridColumn: 'span 2' }}>
               <label className="med-label">Organisme certificateur</label>
-              <input className="med-input" placeholder="ex : Ordre National des Médecins"
+              <input className="med-input" 
                 value={form.organismeCertificateur ?? ''}
                 onChange={e => setForm(p => ({ ...p, organismeCertificateur: e.target.value || undefined }))} />
             </div>
@@ -852,7 +852,7 @@ export default function ProfilPage() {
               </div>
               <div className="med-form-field">
                 <label className="med-label"><Globe size={10} style={{ display: 'inline', marginRight: 4 }} />Nationalité</label>
-                <input className="med-input" placeholder="ex : Béninoise"
+                <input className="med-input" 
                   value={fIdent.nationalite}
                   onChange={e => setFIdent(p => ({ ...p, nationalite: e.target.value }))} />
               </div>
@@ -1021,7 +1021,7 @@ export default function ProfilPage() {
               <div className="med-form-grid" style={{ gridTemplateColumns: '1fr auto auto auto', gap: 10, alignItems: 'flex-end' }}>
                 <div className="med-form-field">
                   <label className="med-label">Nom de la spécialité *</label>
-                  <input className="med-input" placeholder="ex : Cardiologie"
+                  <input className="med-input" 
                     value={specForm.specialite}
                     onChange={e => setSpecForm(p => ({ ...p, specialite: e.target.value }))}
                     onKeyDown={e => e.key === 'Enter' && handleAddSpec()} />

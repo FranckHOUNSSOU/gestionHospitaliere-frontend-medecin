@@ -115,7 +115,7 @@ export default function OrdonnanceModal({ patient, sejour, onClose, onSuccess }:
                 <label className="med-form-label">Médicament (DCI) *</label>
                 <input
                   className="med-form-input"
-                  placeholder="ex: Amoxicilline"
+                  
                   value={ligne.nomMedicamentDci}
                   onChange={(e) => update(ligne._key, 'nomMedicamentDci', e.target.value)}
                 />
@@ -125,7 +125,7 @@ export default function OrdonnanceModal({ patient, sejour, onClose, onSuccess }:
                 <div className="med-form-group">
                   <label className="med-form-label">Dose *</label>
                   <input
-                    className="med-form-input" type="number" min={0.001} step="any" placeholder="ex : 500"
+                    className="med-form-input" type="number" min={0.001} step="any"
                     value={ligne.dose > 0 ? ligne.dose : ''}
                     onChange={(e) => update(ligne._key, 'dose', parseFloat(e.target.value) || 0)}
                   />
